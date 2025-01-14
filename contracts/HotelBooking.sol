@@ -29,6 +29,7 @@ contract HotelBooking {
         uint256 roomNumber; // 객실 번호
         RoomStatus status; // 객실 상태
         uint256 price; // 1박 가격 (Wei 단위)
+        string ipfsHash; // IPFS 해시 (객실 세부 정보 및 이미지)
     }
 
     // 호텔 정보를 저장하는 구조체
@@ -37,20 +38,23 @@ contract HotelBooking {
         string name; // 호텔 이름
         address manager; // 호텔 관리자 주소
         bool isActive; // 호텔 활성화 상태
+        string ipfsHash; // IPFS 해시 (호텔 세부 정보 및 이미지)
     }
 
     // 상태 변수들
     mapping(uint256 => Reservation) public reservations; // 예약 ID => 예약 정보
     mapping(uint256 => Hotel) public hotels; // 호텔 ID => 호텔 정보
     mapping(uint256 => mapping(uint256 => Room)) public hotelRooms; // 호텔 ID => 객실 번호 => 객실 정보
-    mapping(uint256 => uint256[]) public hotelRoomsList; // 호텔 ID => 방 번호 목록
     mapping(uint256 => mapping(uint256 => uint256)) public dateReservationCount; // 호텔 ID => 날짜 => 예약 수
-    uint256 public reservationCount; // 총 예약 수
+    mapping(uint256 => mapping(uint256 => uint256))
+        public yearMonthReservationCount; // 년도 => 월 => 예약 수
+    mapping(uint256 => uint256) public yearTotalReservationCount; // 년도 => 총 예약 수
+    mapping(uint256 => uint256[]) public hotelRoomsList; // 호텔 ID => 방 번호 목록
     uint256 public hotelCount; // 총 호텔 수
 
     // 이벤트 정의
     event HotelAdded(uint256 indexed hotelId, string name, address manager);
-    event RoomAdded(uint256 indexed hotelId, uint256 roomNumber, uint256 price);
+    event RoomAdded(uint256 indexed hotelId, uint256 roomNumber);
     event ReservationCreated(
         uint256 indexed id,
         address indexed user,
@@ -73,9 +77,15 @@ contract HotelBooking {
     }
 
     // 새로운 호텔을 등록하는 함수
-    function addHotel(string memory _name) public {
+    function addHotel(string memory _name, string memory _ipfsHash) public {
         hotelCount++;
-        hotels[hotelCount] = Hotel(hotelCount, _name, msg.sender, true);
+        hotels[hotelCount] = Hotel(
+            hotelCount,
+            _name,
+            msg.sender,
+            true,
+            _ipfsHash
+        );
         emit HotelAdded(hotelCount, _name, msg.sender);
     }
 
@@ -83,30 +93,21 @@ contract HotelBooking {
     function addRoom(
         uint256 _hotelId,
         uint256 _roomNumber,
-        uint256 _price
+        uint256 _price,
+        string memory _ipfsHash
     ) public onlyHotelManager(_hotelId) {
         require(
             hotelRooms[_hotelId][_roomNumber].roomNumber == 0,
             "Room already exists"
         );
-        // 객실 정보 등록
         hotelRooms[_hotelId][_roomNumber] = Room(
             _roomNumber,
             RoomStatus.Available,
-            _price
+            _price,
+            _ipfsHash
         );
-        // 호텔의 방 목록에 추가
         hotelRoomsList[_hotelId].push(_roomNumber);
-        emit RoomAdded(_hotelId, _roomNumber, _price);
-    }
-
-    // 특정 호텔의 모든 방 번호를 조회하는 함수
-    function getHotelRooms(uint256 _hotelId)
-        public
-        view
-        returns (uint256[] memory)
-    {
-        return hotelRoomsList[_hotelId];
+        emit RoomAdded(_hotelId, _roomNumber);
     }
 
     // 새로운 예약을 생성하는 함수
@@ -117,7 +118,6 @@ contract HotelBooking {
         uint256 _checkOutDate,
         string memory _ipfsHash
     ) public payable {
-        // 유효성 검사
         require(hotels[_hotelId].isActive, "Hotel is not active");
         require(
             hotelRooms[_hotelId][_roomNumber].status == RoomStatus.Available,
@@ -135,7 +135,6 @@ contract HotelBooking {
             "Insufficient payment"
         );
 
-        // 예약 ID 생성
         uint256 dailyReservationCount = dateReservationCount[_hotelId][
             _checkInDate
         ] + 1;
@@ -143,7 +142,6 @@ contract HotelBooking {
             (_hotelId * 1000) +
             dailyReservationCount;
 
-        // 새 예약 생성
         Reservation storage newReservation = reservations[reservationId];
         newReservation.id = reservationId;
         newReservation.user = msg.sender;
@@ -155,19 +153,22 @@ contract HotelBooking {
         newReservation.amount = msg.value;
         newReservation.ipfsHash = _ipfsHash;
 
-        // 날짜별 예약 카운트 증가
         for (
             uint256 date = _checkInDate;
             date < _checkOutDate;
             date += 1 days
         ) {
             dateReservationCount[_hotelId][date]++;
+
+            uint256 year = (date / 365 days) + 1970;
+            uint256 month = ((date % 365 days) / 30 days) + 1;
+
+            yearMonthReservationCount[year][month]++;
+            yearTotalReservationCount[year]++;
         }
 
-        // 객실 상태 업데이트
         hotelRooms[_hotelId][_roomNumber].status = RoomStatus.Booked;
 
-        // 이벤트 발생
         emit ReservationCreated(reservationId, msg.sender, _hotelId);
     }
 
@@ -179,19 +180,23 @@ contract HotelBooking {
 
         reservation.status = 0; // 취소 상태로 변경
 
-        // 날짜별 예약 카운트 감소
         for (
             uint256 date = reservation.checkInDate;
             date < reservation.checkOutDate;
             date += 1 days
         ) {
             dateReservationCount[reservation.hotelId][date]--;
+
+            uint256 year = (date / 365 days) + 1970;
+            uint256 month = ((date % 365 days) / 30 days) + 1;
+
+            yearMonthReservationCount[year][month]--;
+            yearTotalReservationCount[year]--;
         }
 
         hotelRooms[reservation.hotelId][reservation.roomNumber]
             .status = RoomStatus.Available;
 
-        // 환불 처리 (실제 구현 시 더 복잡할 수 있음)
         payable(msg.sender).transfer(reservation.amount);
 
         emit ReservationCancelled(_reservationId);
@@ -226,13 +231,46 @@ contract HotelBooking {
         return reservations[_reservationId];
     }
 
-    // 특정 날짜의 예약 수를 조회하는 함수
-    function getReservationCountForDate(uint256 _hotelId, uint256 _date)
+    // 특정 년도와 월에 대한 예약 수 조회 함수
+    function getMonthlyReservationCount(uint256 _year, uint256 _month)
         public
         view
         returns (uint256)
     {
-        return dateReservationCount[_hotelId][_date];
+        return yearMonthReservationCount[_year][_month];
+    }
+
+    // 특정 년도에 대한 총 예약 수 조회 함수
+    function getTotalReservationsForYear(uint256 _year)
+        public
+        view
+        returns (uint256)
+    {
+        return yearTotalReservationCount[_year];
+    }
+
+    // 특정 연도의 월별 예약 수를 출력하는 함수
+    function getMonthlyReservationsForYear(uint256 _year)
+        public
+        view
+        returns (uint256[] memory)
+    {
+        uint256[] memory monthlyCounts = new uint256[](12);
+
+        for (uint256 month = 1; month <= 12; month++) {
+            monthlyCounts[month - 1] = yearMonthReservationCount[_year][month];
+        }
+
+        return monthlyCounts;
+    }
+
+    // 특정 호텔의 모든 방 번호를 조회하는 함수
+    function getHotelRooms(uint256 _hotelId)
+        public
+        view
+        returns (uint256[] memory)
+    {
+        return hotelRoomsList[_hotelId];
     }
 
     // 예약 가격을 계산하는 내부 함수
@@ -244,5 +282,25 @@ contract HotelBooking {
     ) internal view returns (uint256) {
         uint256 numberOfDays = (_checkOutDate - _checkInDate) / 1 days;
         return hotelRooms[_hotelId][_roomNumber].price * numberOfDays;
+    }
+
+    // 호텔과 날짜를 입력 받아 3년 전부터 오늘 날짜 예약 수를 출력하는 함수
+    function getHotelReservationsForDate(uint256 _hotelId, uint256 _date)
+        public
+        view
+        returns (uint256[4] memory)
+    {
+        uint256[4] memory reservationCounts;
+        uint256 year = _date / 10000;
+        uint256 month = (_date % 10000) / 100;
+        uint256 day = _date % 100;
+
+        for (uint256 i = 0; i < 4; i++) {
+            uint256 targetYear = year - 3 + i;
+            uint256 targetDate = (targetYear * 10000) + (month * 100) + day;
+            reservationCounts[i] = dateReservationCount[_hotelId][targetDate];
+        }
+
+        return reservationCounts;
     }
 }
