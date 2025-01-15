@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import Web3 from 'web3';
+import useWeb3 from '../hooks/useWeb3';
 
 const HotelCard = ({ hotel, addRoom }) => {
+    const { web3 } = useWeb3();
     const [newRoomNumber, setNewRoomNumber] = useState('');
     const [newRoomPrice, setNewRoomPrice] = useState('');
     const [newRoomIpfsHash, setNewRoomIpfsHash] = useState('');
@@ -20,7 +21,7 @@ const HotelCard = ({ hotel, addRoom }) => {
             <ul>
                 {hotel.rooms.map((room) => (
                     <li key={room.roomNumber}>
-                        방 번호: {room.roomNumber}, 가격: {Web3.utils.fromWei(room.price, 'ether')} ETH
+                        방 번호: {room.roomNumber}, 가격: {web3.utils.fromWei(room.price, 'ether')} ETH
                     </li>
                 ))}
             </ul>

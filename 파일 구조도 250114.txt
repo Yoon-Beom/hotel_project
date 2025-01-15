@@ -1,0 +1,43 @@
+
+src/
+|-- components/
+|   |-- HotelList.jsx
+|   |-- HotelCard.jsx
+|   |-- ReservationForm.jsx
+|   |-- ReservationList.jsx
+|   |-- StatisticsChart.jsx
+|   |-- Navbar.jsx
+|   `-- Footer.jsx
+|
+|-- pages/
+|   |-- HomePage.jsx
+|   |-- HotelDetailsPage.jsx
+|   |-- ReservationPage.jsx
+|   |-- UserReservationsPage.jsx
+|   |-- HotelManagementPage.jsx
+|   `-- StatisticsPage.jsx
+|
+|-- utils/
+|   |-- web3Utils.js
+|   |-- dateUtils.js
+|   `-- ipfsUtils.js
+|
+|-- contracts/
+|   |-- HotelBooking.sol
+|   `-- HotelBooking.json
+|
+|-- contexts/
+|   `-- Web3Context.js
+|
+|-- hooks/
+|   |-- useWeb3.js
+|   `-- useIPFS.js
+|
+|-- styles/
+|   `-- global.css
+|
+|-- App.js
+`-- index.js
+
+migrations/
+|-- 2_deploy_contracts.js
