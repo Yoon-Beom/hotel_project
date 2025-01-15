@@ -1,51 +1,16 @@
-import React, { useState } from 'react';
-import useWeb3 from '../hooks/useWeb3';
+import React from 'react';
+import RoomList from './RoomList';
 
-const HotelCard = ({ hotel, addRoom }) => {
-    const { web3 } = useWeb3();
-    const [newRoomNumber, setNewRoomNumber] = useState('');
-    const [newRoomPrice, setNewRoomPrice] = useState('');
-    const [newRoomIpfsHash, setNewRoomIpfsHash] = useState('');
-
-    const handleAddRoom = () => {
-        addRoom(hotel.id, newRoomNumber, newRoomPrice, newRoomIpfsHash);
-        setNewRoomNumber('');
-        setNewRoomPrice('');
-        setNewRoomIpfsHash('');
-    };
-
+const HotelCard = ({ hotel }) => {
     return (
-        <li>
-            {hotel.name} (IPFS 해시: {hotel.ipfsHash})
-            <h3>객실 목록</h3>
-            <ul>
-                {hotel.rooms.map((room) => (
-                    <li key={room.roomNumber}>
-                        방 번호: {room.roomNumber}, 가격: {web3.utils.fromWei(room.price, 'ether')} ETH
-                    </li>
-                ))}
-            </ul>
-            <h4>새 방 추가</h4>
-            <input
-                type="number"
-                placeholder="방 번호"
-                value={newRoomNumber}
-                onChange={(e) => setNewRoomNumber(e.target.value)}
-            />
-            <input
-                type="number"
-                placeholder="가격 (ETH)"
-                value={newRoomPrice}
-                onChange={(e) => setNewRoomPrice(e.target.value)}
-            />
-            <input
-                type="text"
-                placeholder="IPFS 해시"
-                value={newRoomIpfsHash}
-                onChange={(e) => setNewRoomIpfsHash(e.target.value)}
-            />
-            <button onClick={handleAddRoom}>방 추가</button>
-        </li>
+        <div className="hotel-card">
+            <h3>{hotel.name}</h3>
+            <p>주소: {hotel.manager}</p>
+            <p>IPFS 해시: {hotel.ipfsHash}</p>
+            <p>상태: {hotel.isActive ? '영업 중' : '영업 중지'}</p>
+
+            <RoomList hotelId={hotel.id} />
+        </div>
     );
 };
 

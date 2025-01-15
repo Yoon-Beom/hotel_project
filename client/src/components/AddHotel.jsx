@@ -1,29 +1,21 @@
 import React, { useState } from 'react';
-import useWeb3 from '../hooks/useWeb3';
+import { useAddHotel } from '../hooks/useHotel';
 
 const AddHotel = ({ onHotelAdded }) => {
-    const { contract, account } = useWeb3();
     const [newHotelName, setNewHotelName] = useState('');
     const [newHotelIpfsHash, setNewHotelIpfsHash] = useState('');
+    const { addHotel, error } = useAddHotel();
 
     const handleAddHotel = async () => {
-        if (!contract) return;
-        try {
-            await contract.methods.addHotel(newHotelName, newHotelIpfsHash).send({
-                from: account,
-                gas: 500000
-            });
+        const success = await addHotel(newHotelName, newHotelIpfsHash, onHotelAdded);
+        if (success) {
             setNewHotelName('');
             setNewHotelIpfsHash('');
-            if (onHotelAdded) onHotelAdded();
-        } catch (error) {
-            console.error("Error adding hotel:", error);
         }
     };
 
     return (
         <div>
-            <h2>새 호텔 등록</h2>
             <input
                 type="text"
                 placeholder="호텔 이름"
@@ -37,6 +29,7 @@ const AddHotel = ({ onHotelAdded }) => {
                 onChange={(e) => setNewHotelIpfsHash(e.target.value)}
             />
             <button onClick={handleAddHotel}>호텔 등록</button>
+            {error && <p>Error: {error}</p>}
         </div>
     );
 };

@@ -1,32 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import useWeb3 from '../hooks/useWeb3';
-import { loadRooms } from '../components/RoomList';
+import React, { useEffect } from 'react';
+import { useHotel } from '../hooks/useHotel';
+import AddRoom from './AddRoom';
+import RoomList from './RoomList';
 
-export const loadHotels = async (contract, account) => {
-    const hotelCount = await contract.methods.hotelCount().call();
-    const hotelList = [];
-    for (let i = 1; i <= hotelCount; i++) {
-        const hotel = await contract.methods.hotels(i).call();
-        const rooms = await loadRooms(contract, i);
-        hotelList.push({ ...hotel, rooms });
-    }
-    return hotelList;
-};
+const HotelManagementList = () => {
+    const { userHotels, fetchHotels } = useHotel();
 
-export const getUserHotels = (hotels, account) => {
-    return hotels.filter(hotel =>
-        hotel.manager.toLowerCase() === account.toLowerCase()
+    useEffect(() => {
+        fetchHotels();
+    }, [fetchHotels]);
+
+    const handleRoomAdded = () => {
+        fetchHotels(); // 객실이 추가되면 호텔 정보를 다시 불러옵니다.
+    };
+
+    return (
+        <div>
+            {userHotels.map(hotel => (
+                <div key={hotel.id}>
+                    <h3>{hotel.name}</h3>
+                    <p>IPFS 해시: {hotel.ipfsHash}</p>
+                    
+                    <AddRoom hotelId={hotel.id} onRoomAdded={handleRoomAdded} />
+                    
+                    <RoomList hotelId={hotel.id} />
+                </div>
+            ))}
+        </div>
     );
-};
-
-const HotelManagementList = ({ hotels }) => {
-    const { account } = useWeb3();
-    const userHotels = getUserHotels(hotels, account);
-    
-    // console.log("hotels: " + hotels);
-    // console.log("userHotels" + userHotels);
-
-    return { userHotels };
 };
 
 export default HotelManagementList;

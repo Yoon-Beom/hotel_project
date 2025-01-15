@@ -1,34 +1,18 @@
 import React, { useState } from 'react';
-import useWeb3 from '../hooks/useWeb3';
+import { useAddRoom } from '../hooks/useRoom';
 
 const AddRoom = ({ hotelId, onRoomAdded }) => {
-    const { web3, contract, account } = useWeb3();
     const [newRoomNumber, setNewRoomNumber] = useState('');
     const [newRoomPrice, setNewRoomPrice] = useState('');
     const [newRoomIpfsHash, setNewRoomIpfsHash] = useState('');
+    const { addRoom, error } = useAddRoom();
 
-    const addRoom = async () => {
-        if (!contract || !hotelId) return;
-        try {
-            await contract.methods.addRoom(
-                hotelId,
-                newRoomNumber,
-                web3.utils.toWei(newRoomPrice, 'ether'),
-                newRoomIpfsHash
-            ).send({
-                from: account,
-                gas: 500000 // 가스 한도 설정
-            });
-
-            // 입력 필드 초기화
+    const handleAddRoom = async () => {
+        const success = await addRoom(hotelId, newRoomNumber, newRoomPrice, newRoomIpfsHash, onRoomAdded);
+        if (success) {
             setNewRoomNumber('');
             setNewRoomPrice('');
             setNewRoomIpfsHash('');
-
-            // 부모 컴포넌트에 객실 추가 완료 알림
-            if (onRoomAdded) onRoomAdded();
-        } catch (error) {
-            console.error("Error adding room:", error);
         }
     };
 
@@ -53,7 +37,8 @@ const AddRoom = ({ hotelId, onRoomAdded }) => {
                 value={newRoomIpfsHash}
                 onChange={(e) => setNewRoomIpfsHash(e.target.value)}
             />
-            <button onClick={addRoom}>객실 추가</button>
+            <button onClick={handleAddRoom}>객실 추가</button>
+            {error && <p>Error: {error}</p>}
         </div>
     );
 };

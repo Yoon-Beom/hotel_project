@@ -1,18 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useRoom } from '../hooks/useRoom';
 import useWeb3 from '../hooks/useWeb3';
 
-export const loadRooms = async (contract, hotelId) => {
-    const roomNumbers = await contract.methods.getHotelRooms(hotelId).call();
-    const rooms = [];
-    for (let roomNumber of roomNumbers) {
-        const room = await contract.methods.hotelRooms(hotelId, roomNumber).call();
-        rooms.push(room);
-    }
-    return rooms;
-};
-
-const RoomList = ({ hotelId, rooms }) => {
+const RoomList = ({ hotelId }) => {
+    const { rooms, fetchRooms } = useRoom();
     const { web3 } = useWeb3();
+
+    useEffect(() => {
+        if (hotelId) {
+            fetchRooms(hotelId);
+        }
+    }, [hotelId, fetchRooms]);
 
     return (
         <div>
