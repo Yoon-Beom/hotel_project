@@ -8,6 +8,7 @@ const AddHotel = ({ onHotelAdded }) => {
 
     const handleAddHotel = async () => {
         const success = await addHotel(newHotelName, newHotelIpfsHash, onHotelAdded);
+
         if (success) {
             setNewHotelName('');
             setNewHotelIpfsHash('');
