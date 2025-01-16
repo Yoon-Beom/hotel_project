@@ -1,0 +1,79 @@
+// File Structure Diagram Last Modify 250116 1000
+hotel_project/
+|-- client/
+|   |-- public/
+|   |-- src/
+|       |-- components/
+|       |   |-- layout/
+|       |   |   |-- Footer.jsx
+|       |   |   |-- Layout.jsx
+|       |   |   `-- Navbar.jsx
+|       |   |-- AddHotel.jsx
+|       |   |-- AddRoom.jsx
+|       |   |-- HotelCard.jsx
+|       |   |-- HotelList.jsx
+|       |   |-- HotelManagementList.jsx
+|       |   |-- ReservationForm.jsx
+|       |   |-- ReservationList.jsx
+|       |   |-- RoomList.jsx
+|       |   `-- StatisticsChart.jsx
+|       |
+|       |-- contexts/
+|       |   `-- Web3Context.js
+|       |
+|       |-- hooks/
+|       |   |-- useHotel.js
+|       |   |-- useIPFS.js
+|       |   |-- useRoom.js
+|       |   `-- useWeb3.js
+|       |
+|       |-- pages/
+|       |   |-- HomePage.jsx
+|       |   |-- HotelDetailsPage.jsx
+|       |   |-- HotelManagementPage.jsx
+|       |   |-- ReservationPage.jsx
+|       |   |-- StatisticsPage.jsx
+|       |   `-- UserReservationsPage.jsx
+|       |
+|       |-- styles/
+|       |   |-- components/
+|       |   |   |-- layout/
+|       |   |   |   |-- Footer.css
+|       |   |   |   |-- Layout.css
+|       |   |   |   `-- Navbar.css
+|       |   |   |-- AddHotel.css
+|       |   |   |-- AddRoom.css
+|       |   |   |-- HotelCard.css
+|       |   |   |-- HotelList.css
+|       |   |   |-- HotelManagementList.css
+|       |   |   |-- ReservationForm.css
+|       |   |   |-- ReservationList.css
+|       |   |   |-- RoomList.css
+|       |   |   `-- StatisticsChart.css
+|       |   |
+|       |   |-- pages/
+|       |   |   |-- HomePage.css
+|       |   |   |-- HotelDetailsPage.css
+|       |   |   |-- HotelManagementPage.css
+|       |   |   |-- ReservationPage.css
+|       |   |   |-- StatisticsPage.css
+|       |   |   `-- UserReservationsPage.css
+|       |   |
+|       |   |-- variables.css
+|       |   `-- global.css
+|       |
+|       |-- utils/
+|       |   |-- dateUtils.js
+|       |   |-- ipfsUtils.js
+|       |   `-- web3Utils.js
+|       |
+|       |-- App.js
+|       `-- index.js
+|
+|-- contracts/
+|   |-- HotelBooking.json
+|   `-- HotelBooking.sol
+|
+`-- migrations/
+    `-- 2_deploy_contracts.js
+

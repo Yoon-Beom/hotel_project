@@ -1,29 +1,29 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import HotelList from './components/HotelList';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from './components/layout/Layout';
+// import HomePage from './pages/HomePage';
 import HotelManagementPage from './pages/HotelManagementPage';
-import useWeb3 from './hooks/useWeb3';
+import HotelList from './components/HotelList';
+// import HotelDetailsPage from './pages/HotelDetailsPage';
+// import ReservationPage from './pages/ReservationPage';
+// import UserReservationsPage from './pages/UserReservationsPage';
+// import StatisticsPage from './pages/StatisticsPage';
+import './styles/global.css';
 
 function App() {
-    const { account } = useWeb3();
-
     return (
         <Router>
-            <div className="App">
-                <nav>
-                    <ul>
-                        <li><Link to="/">홈</Link></li>
-                        {account && (
-                            <li><Link to="/manage">내 호텔 관리</Link></li>
-                        )}
-                    </ul>
-                </nav>
-
+            <Layout>
                 <Routes>
+                    {/* <Route path="/" element={<HomePage />} /> */}
                     <Route path="/" element={<HotelList />} />
                     <Route path="/manage" element={<HotelManagementPage />} />
+                    {/* <Route path="/hotel/:id" element={<HotelDetailsPage />} /> */}
+                    {/* <Route path="/reservation/:hotelId/:roomId" element={<ReservationPage />} /> */}
+                    {/* <Route path="/my-reservations" element={<UserReservationsPage />} /> */}
+                    {/* <Route path="/statistics" element={<StatisticsPage />} /> */}
                 </Routes>
-            </div>
+            </Layout>
         </Router>
     );
 }
