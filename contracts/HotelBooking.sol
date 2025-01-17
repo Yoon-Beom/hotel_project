@@ -43,6 +43,7 @@ contract HotelBooking {
 
     // 상태 변수들
     mapping(uint256 => Reservation) public reservations; // 예약 ID => 예약 정보
+    mapping(address => uint256[]) private userReservations; // 주소 => 예약 ID
     mapping(uint256 => Hotel) public hotels; // 호텔 ID => 호텔 정보
     mapping(uint256 => mapping(uint256 => Room)) public hotelRooms; // 호텔 ID => 객실 번호 => 객실 정보
     mapping(uint256 => mapping(uint256 => uint256)) public dateReservationCount; // 호텔 ID => 날짜 => 예약 수
@@ -167,6 +168,8 @@ contract HotelBooking {
             yearTotalReservationCount[year]++;
         }
 
+        // 사용자의 예약 목록에 새 예약 ID 추가
+        userReservations[msg.sender].push(reservationId);
         hotelRooms[_hotelId][_roomNumber].status = RoomStatus.Booked;
 
         emit ReservationCreated(reservationId, msg.sender, _hotelId);
@@ -202,6 +205,24 @@ contract HotelBooking {
         emit ReservationCancelled(_reservationId);
     }
 
+    // 사용자의 모든 예약 ID 조회 함수
+    function getUserReservations() public view returns (uint256[] memory) {
+        return userReservations[msg.sender];
+    }
+
+    // 여러 예약 정보를 한 번에 조회하는 함수
+    function getReservationsByIds(
+        uint256[] memory reservationIds
+    ) public view returns (Reservation[] memory) {
+        Reservation[] memory userReservationList = new Reservation[](
+            reservationIds.length
+        );
+        for (uint i = 0; i < reservationIds.length; i++) {
+            userReservationList[i] = reservations[reservationIds[i]];
+        }
+        return userReservationList;
+    }
+
     // 예약에 대한 평점을 남기는 함수
     function rateReservation(uint256 _reservationId, uint8 _rating) public {
         Reservation storage reservation = reservations[_reservationId];
@@ -223,38 +244,31 @@ contract HotelBooking {
     }
 
     // 예약 정보를 조회하는 함수
-    function getReservation(uint256 _reservationId)
-        public
-        view
-        returns (Reservation memory)
-    {
+    function getReservation(
+        uint256 _reservationId
+    ) public view returns (Reservation memory) {
         return reservations[_reservationId];
     }
 
     // 특정 년도와 월에 대한 예약 수 조회 함수
-    function getMonthlyReservationCount(uint256 _year, uint256 _month)
-        public
-        view
-        returns (uint256)
-    {
+    function getMonthlyReservationCount(
+        uint256 _year,
+        uint256 _month
+    ) public view returns (uint256) {
         return yearMonthReservationCount[_year][_month];
     }
 
     // 특정 년도에 대한 총 예약 수 조회 함수
-    function getTotalReservationsForYear(uint256 _year)
-        public
-        view
-        returns (uint256)
-    {
+    function getTotalReservationsForYear(
+        uint256 _year
+    ) public view returns (uint256) {
         return yearTotalReservationCount[_year];
     }
 
     // 특정 연도의 월별 예약 수를 출력하는 함수
-    function getMonthlyReservationsForYear(uint256 _year)
-        public
-        view
-        returns (uint256[] memory)
-    {
+    function getMonthlyReservationsForYear(
+        uint256 _year
+    ) public view returns (uint256[] memory) {
         uint256[] memory monthlyCounts = new uint256[](12);
 
         for (uint256 month = 1; month <= 12; month++) {
@@ -265,11 +279,9 @@ contract HotelBooking {
     }
 
     // 특정 호텔의 모든 방 번호를 조회하는 함수
-    function getHotelRooms(uint256 _hotelId)
-        public
-        view
-        returns (uint256[] memory)
-    {
+    function getHotelRooms(
+        uint256 _hotelId
+    ) public view returns (uint256[] memory) {
         return hotelRoomsList[_hotelId];
     }
 
@@ -285,11 +297,10 @@ contract HotelBooking {
     }
 
     // 호텔과 날짜를 입력 받아 3년 전부터 오늘 날짜 예약 수를 출력하는 함수
-    function getHotelReservationsForDate(uint256 _hotelId, uint256 _date)
-        public
-        view
-        returns (uint256[4] memory)
-    {
+    function getHotelReservationsForDate(
+        uint256 _hotelId,
+        uint256 _date
+    ) public view returns (uint256[4] memory) {
         uint256[4] memory reservationCounts;
         uint256 year = _date / 10000;
         uint256 month = (_date % 10000) / 100;

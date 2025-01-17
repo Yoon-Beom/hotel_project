@@ -11,7 +11,7 @@ export const initWeb3 = async () => {
 
             // Web3 인스턴스 생성
             const web3 = new Web3(window.ethereum);
-
+            
             // 네트워크 ID 가져오기
             const networkId = await web3.eth.net.getId();
             const deployedNetwork = HotelBookingContract.networks[networkId];

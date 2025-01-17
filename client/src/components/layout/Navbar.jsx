@@ -16,6 +16,7 @@ const Navbar = () => {
                 try {
                     const balanceWei = await web3.eth.getBalance(account);
                     const balanceEth = web3.utils.fromWei(balanceWei, 'ether');
+                    
                     setBalanceInEth(parseFloat(balanceEth).toFixed(4));
                 } catch (error) {
                     console.error("Failed to fetch balance:", error);
