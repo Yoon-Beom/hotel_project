@@ -1,4 +1,4 @@
-// Layout.jsx
+// client/src/components/layout/Layout.jsx
 import React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';

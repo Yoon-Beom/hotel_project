@@ -26,4 +26,4 @@ REM Truffle 컴파일, 마이그레이션 실행 및 파일 복사
 start cmd.exe /k "cd /d %~dp0 && truffle compile && truffle migrate && xcopy /y build\contracts\HotelBooking.json client\src\contracts\"
 
 echo 작업이 완료되었습니다.
-pause
+

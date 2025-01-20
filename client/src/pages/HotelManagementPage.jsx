@@ -1,4 +1,4 @@
-// HotelManagementPage.jsx
+// client/src/pages/HotelManagementPage.jsx
 import React, { useEffect } from 'react';
 import { useHotel } from '../hooks/useHotel';
 import HotelManagementList from '../components/HotelManagementList';

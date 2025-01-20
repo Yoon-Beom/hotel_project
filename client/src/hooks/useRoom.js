@@ -1,4 +1,4 @@
-// useRoom.js
+// client/src/hooks/useRoom.js
 import { useState } from 'react';
 import useWeb3 from './useWeb3';
 

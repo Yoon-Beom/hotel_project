@@ -1,3 +1,4 @@
+// client/src/components/HotelCard.jsx
 import React from 'react';
 import RoomList from './RoomList';
 

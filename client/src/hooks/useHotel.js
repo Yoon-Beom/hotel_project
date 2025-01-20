@@ -1,4 +1,4 @@
-// useHotel.js
+// client/src/hooks/useHotel.js
 import { useState, useCallback } from 'react';
 import useWeb3 from './useWeb3';
 import { loadRooms } from './useRoom';

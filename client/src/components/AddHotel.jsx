@@ -1,3 +1,4 @@
+// client/src/components/AddHotel.jsx
 import React, { useState } from 'react';
 import { useAddHotel } from '../hooks/useHotel';
 

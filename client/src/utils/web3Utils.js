@@ -1,3 +1,4 @@
+// client/src/utils/web3Utils.js
 import Web3 from 'web3';
 import HotelBookingContract from '../contracts/HotelBooking.json';
 
@@ -15,13 +16,14 @@ export const initWeb3 = async () => {
             // 네트워크 ID 가져오기
             const networkId = await web3.eth.net.getId();
             const deployedNetwork = HotelBookingContract.networks[networkId];
+            console.log("networkId : ", networkId);
 
             // 컨트랙트 인스턴스 생성
             const contract = new web3.eth.Contract(
                 HotelBookingContract.abi,
                 deployedNetwork && deployedNetwork.address
             );
-
+            
             return { web3, contract };
         } catch (error) {
             console.error("사용자가 계정 접근을 거부했거나 오류가 발생했습니다:", error);

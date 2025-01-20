@@ -1,4 +1,4 @@
-// ipfsUtils.js
+// client/src/utils/ipfsUtils.js
 import { create } from 'ipfs-http-client';
 
 const ipfs = create({ url: 'https://ipfs.infura.io:5001/api/v0' });

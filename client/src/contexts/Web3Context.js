@@ -1,3 +1,4 @@
+// client/src/contexts/Web3Context.js
 import React, { createContext, useState, useEffect } from 'react';
 import { initWeb3, getAccount, getBalance } from '../utils/web3Utils';
 

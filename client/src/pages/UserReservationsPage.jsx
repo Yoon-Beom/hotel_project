@@ -1,4 +1,4 @@
-// pages/UserReservationsPage.jsx
+// client/src/pages/UserReservationsPage.jsx
 import React, { useState, useEffect } from 'react';
 import useWeb3 from '../hooks/useWeb3';
 import ReservationList from '../components/ReservationList';

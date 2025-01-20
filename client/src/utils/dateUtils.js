@@ -1,4 +1,4 @@
-// dateUtils.js
+// client/src/utils/dateUtils.js
 
 // 날짜를 'YYYY-MM-DD' 형식의 문자열로 변환
 export const formatDate = (date) => {

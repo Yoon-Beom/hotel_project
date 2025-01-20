@@ -1,4 +1,4 @@
-// useIPFS.js
+// client/src/hooks/useIPFS.js
 import { useState, useCallback } from 'react';
 import { uploadToIPFS, getFromIPFS } from './ipfsUtils';
 

@@ -1,4 +1,4 @@
-// hooks/useReservation.js
+// client/src/hooks/useReservation.js
 import { useState, useCallback } from 'react';
 import useWeb3 from './useWeb3';
 

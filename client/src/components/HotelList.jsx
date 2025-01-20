@@ -1,3 +1,4 @@
+// client/src/components/HotelList.jsx
 import React, { useEffect } from 'react';
 import { useHotel } from '../hooks/useHotel';
 import RoomList from './RoomList';

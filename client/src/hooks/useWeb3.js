@@ -1,3 +1,4 @@
+// client/src/hooks/useWeb3.js
 import { useContext } from 'react';
 import { Web3Context } from '../contexts/Web3Context';
 

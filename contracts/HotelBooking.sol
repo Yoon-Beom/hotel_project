@@ -10,6 +10,15 @@ contract HotelBooking {
         Maintenance
     }
 
+    // 날짜별 객실 상태를 나타내는 열거형
+    enum RoomDateStatus {
+        Available, // 0: 이용 가능
+        Booked, // 1: 예약됨
+        Occupied, // 2: 사용 중
+        CheckedOut, // 3: 체크아웃
+        Cleaning // 4: 청소 중
+    }
+
     // 예약 정보를 저장하는 구조체
     struct Reservation {
         uint256 id; // 예약 고유 번호
@@ -46,6 +55,8 @@ contract HotelBooking {
     mapping(address => uint256[]) private userReservations; // 주소 => 예약 ID
     mapping(uint256 => Hotel) public hotels; // 호텔 ID => 호텔 정보
     mapping(uint256 => mapping(uint256 => Room)) public hotelRooms; // 호텔 ID => 객실 번호 => 객실 정보
+    mapping(uint256 => mapping(uint256 => mapping(uint256 => RoomDateStatus)))
+        public roomDateStatus; // 호텔 ID => 객실 번호 => 날짜 => 방 상태
     mapping(uint256 => mapping(uint256 => uint256)) public dateReservationCount; // 호텔 ID => 날짜 => 예약 수
     mapping(uint256 => mapping(uint256 => uint256))
         public yearMonthReservationCount; // 년도 => 월 => 예약 수
@@ -111,6 +122,52 @@ contract HotelBooking {
         emit RoomAdded(_hotelId, _roomNumber);
     }
 
+    // 특정 날짜에 객실이 예약 가능한지 확인하는 함수
+    function isDateAvailable(
+        uint256 hotelId,
+        uint256 roomNumber,
+        uint256 date
+    ) public view returns (bool) {
+        RoomDateStatus status = roomDateStatus[hotelId][roomNumber][date];
+        return status == RoomDateStatus.Available;
+    }
+
+    // 특정 기간에 대한 객실 예약 가능 여부 확인
+    function isRoomAvailable(
+        uint256 hotelId,
+        uint256 roomNumber,
+        uint256 checkInDate,
+        uint256 checkOutDate
+    ) public view returns (bool) {
+        // 체크인 날짜가 체크아웃 날짜보다 이후인 경우
+        require(checkInDate < checkOutDate, "Invalid date range");
+
+        // 현재 시간보다 이전 날짜인 경우
+        require(checkInDate >= block.timestamp, "Cannot book past dates");
+
+        // 체크인부터 체크아웃 전날까지 모든 날짜 확인
+        for (uint256 date = checkInDate; date < checkOutDate; date += 1 days) {
+            if (!isDateAvailable(hotelId, roomNumber, date)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // 객실 상태 업데이트 함수
+    function updateRoomDateStatus(
+        uint256 hotelId,
+        uint256 roomNumber,
+        uint256 startDate,
+        uint256 endDate,
+        RoomDateStatus status
+    ) internal {
+        for (uint256 date = startDate; date < endDate; date += 1 days) {
+            roomDateStatus[hotelId][roomNumber][date] = status;
+        }
+    }
+
     // 새로운 예약을 생성하는 함수
     function createReservation(
         uint256 _hotelId,
@@ -119,23 +176,38 @@ contract HotelBooking {
         uint256 _checkOutDate,
         string memory _ipfsHash
     ) public payable {
+        // 1. 기본 유효성 검사
         require(hotels[_hotelId].isActive, "Hotel is not active");
+        require(_checkInDate < _checkOutDate, "Invalid date range");
+        require(_checkInDate >= block.timestamp, "Cannot book past dates");
+        require(
+            _checkOutDate <= block.timestamp + 365 days,
+            "Booking too far in advance"
+        );
+
+        // 2. 객실 상태 검사
         require(
             hotelRooms[_hotelId][_roomNumber].status == RoomStatus.Available,
             "Room is not available"
         );
-        require(_checkInDate < _checkOutDate, "Invalid date range");
         require(
-            msg.value >=
-                calculatePrice(
-                    _hotelId,
-                    _roomNumber,
-                    _checkInDate,
-                    _checkOutDate
-                ),
-            "Insufficient payment"
+            isRoomAvailable(_hotelId, _roomNumber, _checkInDate, _checkOutDate),
+            "Room is not available for these dates"
         );
 
+        // 3. 지불 금액 검사 및 처리
+        uint256 requiredAmount = calculatePrice(
+            _hotelId,
+            _roomNumber,
+            _checkInDate,
+            _checkOutDate
+        );
+        require(
+            msg.value >= requiredAmount,
+            "Insufficient payment: Please send the exact amount"
+        );
+
+        // 4. 예약 ID 생성
         uint256 dailyReservationCount = dateReservationCount[_hotelId][
             _checkInDate
         ] + 1;
@@ -143,6 +215,7 @@ contract HotelBooking {
             (_hotelId * 1000) +
             dailyReservationCount;
 
+        // 5. 새 예약 정보 저장
         Reservation storage newReservation = reservations[reservationId];
         newReservation.id = reservationId;
         newReservation.user = msg.sender;
@@ -151,9 +224,17 @@ contract HotelBooking {
         newReservation.checkInDate = _checkInDate;
         newReservation.checkOutDate = _checkOutDate;
         newReservation.status = 1; // 확정 상태
-        newReservation.amount = msg.value;
         newReservation.ipfsHash = _ipfsHash;
 
+        // 6. 금액 처리 및 환불
+        if (msg.value > requiredAmount) {
+            payable(msg.sender).transfer(msg.value - requiredAmount);
+            newReservation.amount = requiredAmount;
+        } else {
+            newReservation.amount = msg.value;
+        }
+
+        // 7. 예약 통계 업데이트
         for (
             uint256 date = _checkInDate;
             date < _checkOutDate;
@@ -168,21 +249,36 @@ contract HotelBooking {
             yearTotalReservationCount[year]++;
         }
 
-        // 사용자의 예약 목록에 새 예약 ID 추가
-        userReservations[msg.sender].push(reservationId);
-        hotelRooms[_hotelId][_roomNumber].status = RoomStatus.Booked;
+        // 8. 객실 상태 업데이트
+        updateRoomDateStatus(
+            _hotelId,
+            _roomNumber,
+            _checkInDate,
+            _checkOutDate,
+            RoomDateStatus.Booked
+        );
 
+        // 9. 사용자 예약 목록 업데이트
+        userReservations[msg.sender].push(reservationId);
+
+        // 10. 이벤트 발생
         emit ReservationCreated(reservationId, msg.sender, _hotelId);
     }
 
     // 예약을 취소하는 함수
     function cancelReservation(uint256 _reservationId) public {
+        // 1. 예약 정보 조회 및 유효성 검사
         Reservation storage reservation = reservations[_reservationId];
         require(reservation.user == msg.sender, "Not the reservation owner");
         require(reservation.status != 0, "Reservation already cancelled");
 
+        // 2. 예약금 저장 (환불 전)
+        uint256 refundAmount = reservation.amount;
+
+        // 3. 예약 상태 업데이트
         reservation.status = 0; // 취소 상태로 변경
 
+        // 4. 예약 통계 업데이트
         for (
             uint256 date = reservation.checkInDate;
             date < reservation.checkOutDate;
@@ -197,11 +293,19 @@ contract HotelBooking {
             yearTotalReservationCount[year]--;
         }
 
-        hotelRooms[reservation.hotelId][reservation.roomNumber]
-            .status = RoomStatus.Available;
+        // 5. 객실 상태 업데이트
+        updateRoomDateStatus(
+            reservation.hotelId,
+            reservation.roomNumber,
+            reservation.checkInDate,
+            reservation.checkOutDate,
+            RoomDateStatus.Available
+        );
 
-        payable(msg.sender).transfer(reservation.amount);
+        // 6. 예약금 환불
+        payable(msg.sender).transfer(refundAmount);
 
+        // 7. 이벤트 발생
         emit ReservationCancelled(_reservationId);
     }
 
