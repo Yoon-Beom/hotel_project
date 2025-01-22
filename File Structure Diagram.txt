@@ -1,4 +1,4 @@
-// File Structure Diagram Last Modify 250116 1000
+// File Structure Diagram Last Modify 250121 1030
 hotel_project/
 |-- client/
 |   |-- public/
@@ -21,9 +21,13 @@ hotel_project/
 |       |-- contexts/
 |       |   `-- Web3Context.js
 |       |
+|       |-- contracts/
+|       |   `-- HotelBooking.json
+|       |
 |       |-- hooks/
 |       |   |-- useHotel.js
 |       |   |-- useIPFS.js
+|       |   |-- useReservation.js
 |       |   |-- useRoom.js
 |       |   `-- useWeb3.js
 |       |
@@ -43,28 +47,31 @@ hotel_project/
 |       |   |   |   `-- Navbar.css
 |       |   |   |-- AddHotel.css
 |       |   |   |-- AddRoom.css
+|       |   |   |-- global.css
 |       |   |   |-- HotelCard.css
 |       |   |   |-- HotelList.css
 |       |   |   |-- HotelManagementList.css
 |       |   |   |-- ReservationForm.css
 |       |   |   |-- ReservationList.css
 |       |   |   |-- RoomList.css
+|       |   |   |-- variables.css
 |       |   |   `-- StatisticsChart.css
 |       |   |
-|       |   |-- pages/
-|       |   |   |-- HomePage.css
-|       |   |   |-- HotelDetailsPage.css
-|       |   |   |-- HotelManagementPage.css
-|       |   |   |-- ReservationPage.css
-|       |   |   |-- StatisticsPage.css
-|       |   |   `-- UserReservationsPage.css
-|       |   |
-|       |   |-- variables.css
-|       |   `-- global.css
+|       |   `--- pages/
+|       |       |-- HomePage.css
+|       |       |-- HotelDetailsPage.css
+|       |       |-- HotelManagementPage.css
+|       |       |-- ReservationPage.css
+|       |       |-- StatisticsPage.css
+|       |       `-- UserReservationsPage.css
+|       |    
 |       |
 |       |-- utils/
 |       |   |-- dateUtils.js
 |       |   |-- ipfsUtils.js
+|       |   |-- hotelUtils.js
+|       |   |-- reservationUtils.js
+|       |   |-- roomUtils.js
 |       |   `-- web3Utils.js
 |       |
 |       |-- App.js
@@ -76,4 +83,3 @@ hotel_project/
 |
 `-- migrations/
     `-- 2_deploy_contracts.js
-

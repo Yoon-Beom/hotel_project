@@ -1,65 +1,61 @@
-// client/src/pages/UserReservationsPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
+import useReservation from '../hooks/useReservation';
 import useWeb3 from '../hooks/useWeb3';
 import ReservationList from '../components/ReservationList';
+// import '../styles/pages/UserReservationsPage.css';
 
+/**
+ * 사용자의 예약 내역을 표시하는 페이지 컴포넌트
+ * @component
+ * @returns {JSX.Element} UserReservationsPage 컴포넌트
+ */
 const UserReservationsPage = () => {
-    const { contract, account } = useWeb3();
-    const [reservations, setReservations] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { 
+        reservations, 
+        isLoading, 
+        error, 
+        fetchUserReservations, 
+        cancelUserReservation 
+    } = useReservation();
+    const { account, isConnected } = useWeb3();
+
+    const loadReservations = useCallback(async () => {
+        if (isConnected && account) {
+            await fetchUserReservations();
+        }
+    }, [isConnected, account, fetchUserReservations]);
 
     useEffect(() => {
-        const fetchReservations = async () => {
-            if (!contract || !account) return;
+        loadReservations();
+    }, [loadReservations]);
 
-            try {
-                setIsLoading(true);
-                // 사용자의 예약 ID 목록 가져오기
-                const reservationIds = await contract.methods.getUserReservations().call({ from: account });
-                
-                // 예약 상세 정보 가져오기
-                const reservationDetails = await contract.methods.getReservationsByIds(reservationIds).call();
-                
-                setReservations(reservationDetails);
-                setIsLoading(false);
-            } catch (err) {
-                console.error("Failed to fetch reservations:", err);
-                setError('예약 내역을 불러오는데 실패했습니다.');
-                setIsLoading(false);
-            }
-        };
-
-        fetchReservations();
-    }, [contract, account]);
-
+    /**
+     * 예약 취소 핸들러
+     * @async
+     * @function handleCancelReservation
+     * @param {number} reservationId - 취소할 예약 ID
+     */
     const handleCancelReservation = async (reservationId) => {
-        if (!contract || !account) return;
-
-        try {
-            await contract.methods.cancelReservation(reservationId).send({
-                from: account,
-                gas: 500000
-            });
-            
-            // 예약 목록 새로고침
-            const reservationIds = await contract.methods.getUserReservations().call({ from: account });
-            const reservationDetails = await contract.methods.getReservationsByIds(reservationIds).call();
-            setReservations(reservationDetails);
-        } catch (err) {
-            console.error("Failed to cancel reservation:", err);
-            setError('예약 취소에 실패했습니다.');
+        if (!isConnected) {
+            alert('지갑을 연결해주세요.');
+            return;
+        }
+        const success = await cancelUserReservation(reservationId);
+        if (success) {
+            alert('예약이 성공적으로 취소되었습니다.');
+            loadReservations();
         }
     };
 
-    if (isLoading) return <div>로딩 중...</div>;
-    if (error) return <div>에러: {error}</div>;
+    if (!isConnected) return <div className="error">지갑을 연결해주세요.</div>;
+    if (isLoading) return <div className="loading">예약 정보를 불러오는 중...</div>;
+    if (error) return <div className="error">에러: {error}</div>;
 
     return (
         <div className="user-reservations-page">
             <h1>내 예약 내역</h1>
             {reservations.length === 0 ? (
-                <p>예약 내역이 없습니다.</p>
+                <p className="no-reservations">예약 내역이 없습니다.</p>
             ) : (
                 <ReservationList 
                     reservations={reservations}

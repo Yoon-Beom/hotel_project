@@ -1,27 +1,88 @@
 // client/src/hooks/useRoom.js
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import useWeb3 from './useWeb3';
+import {
+    loadRooms,
+    loadRoomInfo,
+    checkRoomAvailability,
+    getRoomDateStatus,
+    filterAvailableRooms,
+    calculateRoomPrice
+} from '../utils/roomUtils';
 
-export const loadRooms = async (contract, hotelId) => {
-    const roomNumbers = await contract.methods.getHotelRooms(hotelId).call();
-    const rooms = [];
-    for (let roomNumber of roomNumbers) {
-        const room = await contract.methods.hotelRooms(hotelId, roomNumber).call();
-        rooms.push(room);
-    }
-    return rooms;
-};
-
-export const useAddRoom = () => {
+/**
+ * 객실 관련 기능을 제공하는 커스텀 훅
+ * @returns {Object} 객실 관련 상태와 함수들
+ */
+export const useRoom = () => {
     const { web3, contract, account } = useWeb3();
+    const [rooms, setRooms] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const addRoom = async (hotelId, roomNumber, roomPrice, ipfsHash, onRoomAdded) => {
-        if (!contract || !hotelId) {
-            setError("Contract not initialized or invalid hotel ID");
+    /**
+     * 호텔의 모든 객실을 조회합니다.
+     * @param {number} hotelId - 호텔 ID
+     */
+    const fetchRooms = useCallback(async (hotelId) => {
+        if (!contract) {
+            setError("Contract not initialized");
+            return;
+        }
+        try {
+            setIsLoading(true);
+            const fetchedRooms = await loadRooms(contract, hotelId);
+
+            setRooms(fetchedRooms);
+            setError(null);
+            return fetchedRooms;
+        } catch (err) {
+            setError(err.message);
+            return [];
+        } finally {
+            setIsLoading(false);
+        }
+    }, [contract]);
+
+    /**
+     * 특정 객실의 정보를 조회합니다.
+     * @param {number} hotelId - 호텔 ID
+     * @param {number} roomId - 객실 ID
+     * @returns {Promise<Object|null>} 객실 정보 또는 null
+     */
+    const getRoomInfo = useCallback(async (hotelId, roomId) => {
+        if (!contract) {
+            setError("Contract not initialized");
+            return null;
+        }
+        try {
+            setIsLoading(true);
+            const roomInfo = await loadRoomInfo(contract, hotelId, roomId);
+            setError(null);
+            return roomInfo;
+        } catch (err) {
+            setError(err.message);
+            return null;
+        } finally {
+            setIsLoading(false);
+        }
+    }, [contract]);
+
+    /**
+     * 새 객실을 추가합니다.
+     * @param {number} hotelId - 호텔 ID
+     * @param {number} roomNumber - 객실 번호
+     * @param {string} roomPrice - 객실 가격 (ETH)
+     * @param {string} ipfsHash - IPFS 해시
+     * @returns {Promise<boolean>} 추가 성공 여부
+     */
+    const addRoom = useCallback(async (hotelId, roomNumber, roomPrice, ipfsHash) => {
+        if (!contract || !account) {
+            setError("Contract or account not initialized");
             return false;
         }
         try {
+            setIsLoading(true);
             await contract.methods.addRoom(
                 hotelId,
                 roomNumber,
@@ -31,28 +92,115 @@ export const useAddRoom = () => {
                 from: account,
                 gas: 500000
             });
-            if (onRoomAdded) {
-                onRoomAdded();
-            }
+            await fetchRooms(hotelId);
             return true;
-        } catch (error) {
-            console.error("Error adding room:", error);
-            setError(error.message);
+        } catch (err) {
+            setError(err.message);
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+    }, [contract, account, web3, fetchRooms]);
+
+    /**
+     * 객실의 가용성을 확인합니다.
+     * @param {number} hotelId - 호텔 ID
+     * @param {number} roomId - 객실 ID
+     * @param {Date} checkInDate - 체크인 날짜
+     * @param {Date} checkOutDate - 체크아웃 날짜
+     * @returns {Promise<boolean>} 객실 가용성 여부
+     */
+    const checkAvailability = useCallback(async (hotelId, roomId, checkInDate, checkOutDate) => {
+        if (!contract) {
+            setError("Contract not initialized");
             return false;
         }
-    };
+        try {
+            setIsLoading(true);
+            const isAvailable = await checkRoomAvailability(contract, hotelId, roomId, checkInDate, checkOutDate);
+            setError(null);
+            return isAvailable;
+        } catch (err) {
+            setError(err.message);
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+    }, [contract]);
 
-    return { addRoom, error };
+    /**
+     * 특정 날짜의 객실 상태를 조회합니다.
+     * @param {number} hotelId - 호텔 ID
+     * @param {number} roomId - 객실 ID
+     * @param {Date} date - 조회할 날짜
+     * @returns {Promise<number>} 객실 상태 코드
+     */
+    const getRoomStatus = useCallback(async (hotelId, roomId, date) => {
+        if (!contract) {
+            setError("Contract not initialized");
+            return null;
+        }
+        try {
+            setIsLoading(true);
+            const status = await getRoomDateStatus(contract, hotelId, roomId, date);
+            setError(null);
+            return status;
+        } catch (err) {
+            setError(err.message);
+            return null;
+        } finally {
+            setIsLoading(false);
+        }
+    }, [contract]);
+
+    /**
+     * 예약 가능한 객실을 필터링합니다.
+     * @param {number} hotelId - 호텔 ID
+     * @param {Date} checkInDate - 체크인 날짜
+     * @param {Date} checkOutDate - 체크아웃 날짜
+     * @returns {Promise<Array>} 예약 가능한 객실 목록
+     */
+    const getAvailableRooms = useCallback(async (hotelId, checkInDate, checkOutDate) => {
+        if (!contract) {
+            setError("Contract not initialized");
+            return [];
+        }
+        try {
+            setIsLoading(true);
+            const availableRooms = await filterAvailableRooms(contract, hotelId, checkInDate, checkOutDate);
+            setError(null);
+            return availableRooms;
+        } catch (err) {
+            setError(err.message);
+            return [];
+        } finally {
+            setIsLoading(false);
+        }
+    }, [contract]);
+
+    /**
+     * 객실 가격을 계산합니다.
+     * @param {Object} room - 객실 정보
+     * @param {Date} checkInDate - 체크인 날짜
+     * @param {Date} checkOutDate - 체크아웃 날짜
+     * @returns {Object} 계산된 가격 정보
+     */
+    const calculatePrice = useCallback((room, checkInDate, checkOutDate) => {
+        return calculateRoomPrice(room, checkInDate, checkOutDate);
+    }, []);
+
+    return {
+        rooms,
+        isLoading,
+        error,
+        fetchRooms,
+        getRoomInfo,
+        addRoom,
+        checkAvailability,
+        getRoomStatus,
+        getAvailableRooms,
+        calculatePrice
+    };
 };
 
-export const useRoom = () => {
-    const { contract } = useWeb3();
-    const [rooms, setRooms] = useState([]);
-
-    const fetchRooms = async (hotelId) => {
-        const fetchedRooms = await loadRooms(contract, hotelId);
-        setRooms(fetchedRooms);
-    };
-
-    return { rooms, fetchRooms };
-};
+export default useRoom;

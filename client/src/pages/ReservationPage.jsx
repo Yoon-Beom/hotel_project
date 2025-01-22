@@ -1,22 +1,29 @@
 // client/src/pages/ReservationPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useWeb3 from '../hooks/useWeb3';
-import { useAddReservation } from '../hooks/useReservation';
+import useReservation from '../hooks/useReservation';
+import useHotel from '../hooks/useHotel';
+import useRoom from '../hooks/useRoom';
 import { formatDate, parseDate } from '../utils/dateUtils';
-import { useHotel } from '../hooks/useHotel';
-import { useRoom } from '../hooks/useRoom';
+import { weiToEther, etherToWei } from '../utils/web3Utils';
+import { calculateReservationDuration, isValidReservationDate } from '../utils/reservationUtils';
+// import '../styles/pages/ReservationPage.css';
 
+/**
+ * 예약 페이지 컴포넌트
+ * 호텔 객실 예약을 위한 폼과 정보를 제공합니다.
+ * @component
+ * @returns {JSX.Element} ReservationPage 컴포넌트
+ */
 const ReservationPage = () => {
-    // URL 파라미터와 네비게이션
     const { hotelId, roomId } = useParams();
     const navigate = useNavigate();
-
-    // Web3와 예약 훅
-    const { web3, contract } = useWeb3();
-    const { addReservation, error: reservationError } = useAddReservation();
+    const { account } = useWeb3();
+    const { addReservation, isLoading: isReservationLoading, error: reservationError } = useReservation();
+    const { getHotelInfo } = useHotel();
+    const { getRoomInfo } = useRoom();
     
-    // 상태 관리
     const [hotel, setHotel] = useState(null);
     const [room, setRoom] = useState(null);
     const [checkIn, setCheckIn] = useState('');
@@ -25,55 +32,68 @@ const ReservationPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // 호텔과 객실 정보 로드
-    useEffect(() => {
-        const loadHotelAndRoom = async () => {
-            if (!contract) return;
+    /**
+     * 호텔과 객실 정보를 로드하는 함수
+     * @async
+     * @function loadHotelAndRoom
+     */
+    const loadHotelAndRoom = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const hotelData = await getHotelInfo(hotelId);
+            const roomData = await getRoomInfo(hotelId, roomId);
             
-            try {
-                setIsLoading(true);
-                const hotelData = await contract.methods.hotels(hotelId).call();
-                const roomData = await contract.methods.hotelRooms(hotelId, roomId).call();
-                
-                setHotel(hotelData);
-                setRoom(roomData);
-                setError(null);
-            } catch (err) {
-                console.error('Failed to load hotel and room data:', err);
-                setError('호텔과 객실 정보를 불러오는데 실패했습니다.');
-            } finally {
-                setIsLoading(false);
-            }
-        };
+            setHotel(hotelData);
+            setRoom(roomData);
+            setError(null);
+        } catch (err) {
+            setError('호텔과 객실 정보를 불러오는데 실패했습니다.');
+        } finally {
+            setIsLoading(false);
+        }
+    }, [hotelId, roomId, getHotelInfo, getRoomInfo]);
 
+    useEffect(() => {
         loadHotelAndRoom();
-    }, [contract, hotelId, roomId]);
+    }, [loadHotelAndRoom]);
 
-    // 총 가격 계산
     useEffect(() => {
         if (checkIn && checkOut && room) {
-            const startDate = parseDate(checkIn);
-            const endDate = parseDate(checkOut);
-            const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-            const pricePerDay = web3.utils.fromWei(room.price, 'ether');
-            const total = (days * parseFloat(pricePerDay)).toString();
-            setTotalPrice(total);
+            const checkInDate = parseDate(checkIn);
+            const checkOutDate = parseDate(checkOut);
+            if (isValidReservationDate(checkInDate, checkOutDate)) {
+                const { nights } = calculateReservationDuration(checkInDate, checkOutDate);
+                const pricePerNight = weiToEther(room.price);
+                const total = (nights * parseFloat(pricePerNight)).toFixed(4);
+                setTotalPrice(total);
+            } else {
+                setError('유효하지 않은 예약 날짜입니다.');
+            }
         }
-    }, [checkIn, checkOut, room, web3]);
+    }, [checkIn, checkOut, room]);
 
-    // 예약 처리
+    /**
+     * 예약 제출 핸들러
+     * @async
+     * @function handleSubmit
+     */
     const handleSubmit = async () => {
-        if (!checkIn || !checkOut) {
-            setError('체크인/체크아웃 날짜를 선택해주세요.');
+        if (!checkIn || !checkOut) return;
+
+        const checkInDate = parseDate(checkIn);
+        const checkOutDate = parseDate(checkOut);
+
+        if (!isValidReservationDate(checkInDate, checkOutDate)) {
+            setError('유효하지 않은 예약 날짜입니다.');
             return;
         }
 
         const success = await addReservation(
             hotelId,
             roomId,
-            parseDate(checkIn),
-            parseDate(checkOut),
-            totalPrice
+            checkInDate,
+            checkOutDate,
+            etherToWei(totalPrice)
         );
 
         if (success) {
@@ -81,9 +101,9 @@ const ReservationPage = () => {
         }
     };
 
-    if (isLoading) return <div>로딩 중...</div>;
-    if (error || reservationError) return <div>에러: {error || reservationError}</div>;
-    if (!hotel || !room) return <div>정보를 찾을 수 없습니다.</div>;
+    if (isLoading || isReservationLoading) return <div className="loading">로딩 중...</div>;
+    if (error || reservationError) return <div className="error">에러: {error || reservationError}</div>;
+    if (!hotel || !room) return <div className="not-found">정보를 찾을 수 없습니다.</div>;
 
     return (
         <div className="reservation-page">
@@ -92,13 +112,14 @@ const ReservationPage = () => {
             <div className="hotel-info">
                 <h2>{hotel.name}</h2>
                 <p>객실 번호: {room.roomNumber}</p>
-                <p>1박 가격: {web3.utils.fromWei(room.price, 'ether')} ETH</p>
+                <p>1박 가격: {weiToEther(room.price)} ETH</p>
             </div>
 
             <div className="reservation-form">
                 <div className="form-group">
-                    <label>체크인 날짜:</label>
+                    <label htmlFor="checkIn">체크인 날짜:</label>
                     <input
+                        id="checkIn"
                         type="date"
                         value={checkIn}
                         onChange={(e) => setCheckIn(e.target.value)}
@@ -107,8 +128,9 @@ const ReservationPage = () => {
                 </div>
 
                 <div className="form-group">
-                    <label>체크아웃 날짜:</label>
+                    <label htmlFor="checkOut">체크아웃 날짜:</label>
                     <input
+                        id="checkOut"
                         type="date"
                         value={checkOut}
                         onChange={(e) => setCheckOut(e.target.value)}
@@ -124,10 +146,10 @@ const ReservationPage = () => {
 
                 <button
                     onClick={handleSubmit}
-                    disabled={!checkIn || !checkOut || isLoading}
+                    disabled={!checkIn || !checkOut || isReservationLoading || !account}
                     className="submit-button"
                 >
-                    {isLoading ? '예약 처리 중...' : '예약하기'}
+                    {isReservationLoading ? '예약 처리 중...' : '예약하기'}
                 </button>
             </div>
         </div>

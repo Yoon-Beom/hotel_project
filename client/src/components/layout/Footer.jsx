@@ -1,8 +1,15 @@
-// client/src/components/layout/Footer.jsx
+// client/src/componets/layout/Footer.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/components/layout/Footer.css';
 
+/**
+ * 푸터 컴포넌트
+ * 웹사이트의 하단에 표시되는 정보와 링크를 포함합니다.
+ *
+ * @component
+ * @returns {JSX.Element} Footer 컴포넌트
+ */
 const Footer = () => {
     return (
         <footer className="footer">
