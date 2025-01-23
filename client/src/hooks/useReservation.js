@@ -9,34 +9,44 @@ import {
     isValidReservationDate,
     calculateReservationDuration
 } from '../utils/reservationUtils';
+import { etherToWei } from '../utils/web3Utils';
+import { isValidDate } from '../utils/dateUtils';
 
 /**
  * 예약 관련 커스텀 훅
  * @returns {Object} 예약 관련 상태와 함수들
  */
 export const useReservation = () => {
-    const { contract, account } = useWeb3();
+    const { web3, contract, account } = useWeb3();
     const [reservations, setReservations] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
     /**
-     * 새로운 예약을 생성합니다.
+     * 새로운 예약을 추가하는 함수입니다.
      * @async
+     * @function addReservation
      * @param {number} hotelId - 호텔 ID
      * @param {number} roomId - 객실 ID
      * @param {Date} checkInDate - 체크인 날짜
      * @param {Date} checkOutDate - 체크아웃 날짜
-     * @returns {Promise<boolean>} 예약 생성 성공 여부
+     * @param {string} price - 예약 가격 (Wei 단위)
+     * @returns {Promise<boolean>} 예약 추가 성공 여부
      */
-    const addReservation = useCallback(async (hotelId, roomId, checkInDate, checkOutDate) => {
+    const addReservation = useCallback(async (hotelId, roomId, checkInDate, checkOutDate, price) => {
         if (!contract || !account) {
             setError("Contract or account not initialized");
             return false;
         }
+        if (!isValidDate(checkInDate) || !isValidDate(checkOutDate)) {
+            throw new Error('유효하지 않은 날짜입니다.');
+        }
+        if (checkInDate >= checkOutDate) {
+            throw new Error('체크아웃 날짜는 체크인 날짜보다 늦어야 합니다.');
+        }
         try {
             setIsLoading(true);
-            await createReservation(contract, hotelId, roomId, checkInDate, checkOutDate, account);
+            await createReservation(contract, hotelId, roomId, checkInDate, checkOutDate, price, account);
             await fetchUserReservations();
             return true;
         } catch (err) {
@@ -45,7 +55,7 @@ export const useReservation = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [contract, account]);
+    }, [contract, account]);    
 
     /**
      * 예약을 취소합니다.

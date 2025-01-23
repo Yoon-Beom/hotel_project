@@ -1,0 +1,340 @@
+/* styles/components/MonthCalendar.css */
+.calendar-container {
+  padding: 20px;
+  width: 100%; /* 월 버튼 너비에 맞춤 */
+  margin: 0 auto;
+}
+
+.calendar-stats-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+}
+.calendar-section {
+  width: 100%;
+  min-width: 600px;
+}
+
+.stats-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+/* 통계용 캘린더 크기 조정 */
+.calendar-section.with-stats .react-calendar {
+  width: 100% !important;
+  min-height: 600px; /* 체크인/아웃 캘린더와 동일한 높이 */
+}
+
+/* 통계가 보일 때의 캘린더 섹션 스타일 */
+.calendar-section.with-stats {
+  flex: 1;
+}
+
+/* 통계가 숨겨질 때의 캘린더 섹션 스타일 */
+.calendar-section:only-child {
+  flex: 1;
+}
+
+/* 캘린더 전체 스타일 */
+.react-calendar {
+  width: 100% !important;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+/* 헤더 영역 (월 표시) */
+.react-calendar__navigation {
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+.react-calendar__navigation button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* 요일 표시 영역 */
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  padding: 10px;
+}
+
+/* 날짜 타일 스타일 */
+.react-calendar__tile {
+  position: relative;
+  height: 100px;
+  padding: 10px;
+  background: #e6f3ff;
+  border-radius: 8px;
+  margin: 2px;
+  font-weight: normal; /* bold에서 normal로 변경 */
+}
+
+/* 현재 날짜 스타일 */
+.react-calendar__tile--now {
+  background: #f89b00 !important;
+  color: white !important;
+  font-weight: bold !important;
+}
+
+/* 현재 날짜에 예약 수 표시 스타일 */
+.react-calendar__tile--now .booking-count {
+  background: white !important;
+  color: #f89b00 !important;
+  font-weight: bold !important;
+}
+
+/* 현재 날짜가 선택되었을 때 스타일 */
+.react-calendar__tile--now.react-calendar__tile--active {
+  background: #0047b3 !important;
+  color: white !important;
+}
+
+/* 현재 날짜가 선택되었을 때 예약 수 표시 스타일 */
+.react-calendar__tile--now.react-calendar__tile--active .booking-count {
+  background: white !important;
+  color: #0047b3 !important;
+}
+
+/* 주말 스타일 */
+.react-calendar__month-view__days__day--weekend {
+  color: #ff0000;
+}
+
+/* 이전/다음 달 날짜 스타일 */
+.react-calendar__month-view__days__day--neighboringMonth {
+  background: #f0f0f0;
+  color: #757575;
+}
+
+/* 예약 수 표시 스타일 */
+.booking-count {
+  font-size: 14px;
+  margin-top: 5px;
+  text-align: center;
+  background: white;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+/* 선택된 날짜 스타일 추가 */
+.react-calendar__tile--active,
+.react-calendar__tile--range,
+.react-calendar__tile--rangeStart,
+.react-calendar__tile--rangeEnd {
+  color: #0047b3 !important;
+  background: #b3d1ff !important; /* 선택된 날짜 배경색 추가 */
+}
+
+/* 선택된 날짜가 주말일 경우에도 동일한 스타일 적용 */
+.react-calendar__tile--active.react-calendar__month-view__days__day--weekend,
+.react-calendar__tile--range.react-calendar__month-view__days__day--weekend,
+.react-calendar__tile--rangeStart.react-calendar__month-view__days__day--weekend,
+.react-calendar__tile--rangeEnd.react-calendar__month-view__days__day--weekend {
+  color: #0047b3 !important;
+  background: #b3d1ff !important; /* 선택된 주말 배경색 추가 */
+}
+
+/* hover 시에도 스타일 유지 */
+.react-calendar__tile--active:enabled:hover,
+.react-calendar__tile--range:enabled:hover,
+.react-calendar__tile--rangeStart:enabled:hover,
+.react-calendar__tile--rangeEnd:enabled:hover {
+  color: #0047b3 !important;
+  background: #b3d1ff !important; /* hover 시 배경색 유지 */
+}
+
+/* 네비게이션 화살표 버튼 숨기기 */
+.react-calendar__navigation__arrow.react-calendar__navigation__prev2-button,
+.react-calendar__navigation__arrow.react-calendar__navigation__prev-button,
+.react-calendar__navigation__arrow.react-calendar__navigation__next-button,
+.react-calendar__navigation__arrow.react-calendar__navigation__next2-button {
+  display: none;
+}
+
+/* navigation label 버튼 스타일 수정 */
+.react-calendar__navigation__label {
+  pointer-events: none; /* 클릭 이벤트 비활성화 */
+  background: none !important; /* 배경 제거 */
+  border: none !important; /* 테두리 제거 */
+  cursor: default !important; /* 커서 기본값으로 변경 */
+}
+
+/* hover 효과 제거 */
+.react-calendar__navigation__label:enabled:hover,
+.react-calendar__navigation__label:enabled:focus {
+  background: none !important;
+}
+
+/* 월 표시 텍스트 크기 증가 */
+.react-calendar__navigation__label {
+  font-size: 24px !important;
+}
+
+/* 요일 표시 텍스트 크기 증가 */
+.react-calendar__month-view__weekdays {
+  font-size: 18px !important;
+}
+
+/* 날짜 숫자 크기 증가 */
+.react-calendar__tile {
+  font-size: 20px !important;
+}
+
+/* 예약 수 표시 스타일 - 여백 조정 */
+.booking-count {
+  font-size: 14px;
+  margin-top: 3px; /* 상단 여백 축소 */
+  text-align: center;
+  background: white;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.navigation-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0 10px;
+}
+
+.check-date {
+  font-size: 14px;
+  color: #666;
+}
+
+.current-month {
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.calendar-wrapper {
+  display: flex;
+  gap: 20px;
+}
+
+/* 통계 차트와 데이터 영역 */
+.yearly-stats {
+  width: 100%;
+  padding: 20px 0;
+}
+
+/* 차트 컨테이너 스타일 추가 */
+.yearly-stats canvas {
+  height: 550px !important; /* 차트 높이 강제 지정 */
+  margin-bottom: 30px;
+}
+
+.hotel-stats {
+  margin-top: 20px;
+  padding: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.hotel-stats h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.yearly-bookings {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.booking-year {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 10px;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.booking-stats {
+  min-width: 200px;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.booking-stats h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.stats-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.stat-item:last-child {
+  border-bottom: none;
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.mode-button {
+  padding: 8px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.mode-button.active {
+  background: #1a75ff;
+  color: white;
+  border-color: #1a75ff;
+}
+
+.mode-button:hover {
+  background: #f0f0f0;
+}
+
+.mode-button.active:hover {
+  background: #0047b3;
+}
+
+/* 반응형 처리 */
+@media screen and (max-width: 768px) {
+  .calendar-section {
+    min-width: 100%;
+  }
+
+  .stats-section {
+    min-width: 100%;
+  }
+}

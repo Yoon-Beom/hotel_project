@@ -8,7 +8,7 @@ import HotelList from './components/HotelList';
 // import HotelDetailsPage from './pages/HotelDetailsPage';
 import ReservationPage from './pages/ReservationPage';
 // import UserReservationsPage from './pages/UserReservationsPage';
-// import StatisticsPage from './pages/StatisticsPage';
+import StatisticsPage from './pages/StatisticsPage';
 import UserReservationsPage from './pages/UserReservationsPage';
 import './styles/global.css';
 
@@ -23,8 +23,7 @@ function App() {
                     {/* <Route path="/hotel/:id" element={<HotelDetailsPage />} /> */}
                     <Route path="/reservation/:hotelId/:roomId" element={<ReservationPage />} />
                     <Route path="/my-reservations" element={<UserReservationsPage />} />
-                    {/* <Route path="/my-reservations" element={<UserReservationsPage />} /> */}
-                    {/* <Route path="/statistics" element={<StatisticsPage />} /> */}
+                    <Route path="/statistics" element={<StatisticsPage />} />
                 </Routes>
             </Layout>
         </Router>

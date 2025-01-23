@@ -7,6 +7,26 @@ import { dateToUnixTimestamp, formatDate, daysBetween, isValidDate, parseDate } 
  */
 
 /**
+ * 객실 상태 번호를 문자열로 변환하는 함수
+ * @param {number} statusNumber - 객실 상태 번호
+ * @returns {string} 객실 상태 문자열
+ */
+function getRoomStatusString(statusNumber) {
+    switch (statusNumber) {
+        case 0:
+            return '이용 가능';
+        case 1:
+            return '예약됨';
+        case 2:
+            return '청소 필요';
+        case 3:
+            return '유지보수 중';
+        default:
+            return '알 수 없음';
+    }
+}
+
+/**
  * 객실의 가용성을 확인합니다.
  * @async
  * @function checkRoomAvailability
@@ -76,7 +96,10 @@ export const loadRooms = async (contract, hotelId) => {
             const room = await contract.methods.hotelRooms(hotelId, roomId).call();
             return {
                 ...room,
-                lastUpdated: formatDate(new Date(room.lastUpdated * 1000)) // Unix 타임스탬프를 Date 객체로 변환 후 포맷팅
+                roomNumber: Number(room.roomNumber),
+                status: getRoomStatusString(Number(room.status)),
+                price: Number(room.price),
+                lastUpdated: formatDate(new Date(Number(room.lastUpdated) * 1000))
             };
         }));
         return rooms;
@@ -84,6 +107,7 @@ export const loadRooms = async (contract, hotelId) => {
         throw new Error(`객실 목록 로딩 실패 (호텔 ID: ${hotelId}): ${error.message}`);
     }
 };
+
 
 /**
  * 특정 객실의 정보를 로드합니다.

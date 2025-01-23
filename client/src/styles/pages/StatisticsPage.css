@@ -1,0 +1,62 @@
+/* 통계 페이지 전체 컨테이너 */
+.statistics-page {
+    padding: 20px;
+    width: 70%; /* 양쪽 15% 여백을 위해 70%로 설정 */
+    margin: 0 auto;
+}
+
+/* 월 버튼 컨테이너 */
+.month-buttons {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 5px;
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.month-buttons button {
+    padding: 10px 0;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #e6f3ff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+    text-align: center;
+}
+
+.month-buttons button:hover {
+    background-color: #b3d1ff;
+}
+
+/* 선택된 월 스타일 */
+.month-buttons button.selected {
+    background-color: #1a75ff;
+    color: white;
+}
+
+/* MonthCalendar.css에 추가 */
+.calendar-header {
+    margin-bottom: 20px;
+    font-family: "Noto Sans KR", sans-serif;
+}
+
+.check-dates {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    font-size: 16px;
+}
+
+.arrow {
+    color: #666;
+}
+
+/* 기존 CSS에 폰트 패밀리 추가 */
+.react-calendar {
+    font-family: "Noto Sans KR", sans-serif;
+}

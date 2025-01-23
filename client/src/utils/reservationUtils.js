@@ -7,7 +7,7 @@ import { dateToUnixTimestamp, formatDate, isValidDate, daysBetween } from './dat
  */
 
 /**
- * 새로운 예약을 생성합니다.
+ * 스마트 컨트랙트를 통해 새로운 예약을 생성합니다.
  * @async
  * @function createReservation
  * @param {Object} contract - 호텔 예약 스마트 컨트랙트 인스턴스
@@ -15,24 +15,21 @@ import { dateToUnixTimestamp, formatDate, isValidDate, daysBetween } from './dat
  * @param {number} roomId - 객실 ID
  * @param {Date} checkInDate - 체크인 날짜
  * @param {Date} checkOutDate - 체크아웃 날짜
+ * @param {string} price - 예약 가격 (Wei 단위)
  * @param {string} account - 사용자 계정 주소
  * @returns {Promise<number>} 생성된 예약 ID
  * @throws {Error} 예약 생성 실패 시 에러
  */
-export const createReservation = async (contract, hotelId, roomId, checkInDate, checkOutDate, account) => {
-    if (!isValidDate(checkInDate) || !isValidDate(checkOutDate)) {
-        throw new Error('유효하지 않은 날짜입니다.');
-    }
-    if (checkInDate >= checkOutDate) {
-        throw new Error('체크아웃 날짜는 체크인 날짜보다 늦어야 합니다.');
-    }
+export const createReservation = async (contract, hotelId, roomId, checkInDate, checkOutDate, price, account) => {
     try {
         const result = await contract.methods.createReservation(
             hotelId,
             roomId,
             dateToUnixTimestamp(checkInDate),
-            dateToUnixTimestamp(checkOutDate)
-        ).send({ from: account });
+            dateToUnixTimestamp(checkOutDate),
+            "dummyIPFS"
+        ).send({ from: account, gas: 500000, value: price })  // value 추가
+
         return result.events.ReservationCreated.returnValues.reservationId;
     } catch (error) {
         throw new Error(`예약 생성 실패 (호텔 ID: ${hotelId}, 객실 ID: ${roomId}, 체크인: ${formatDate(checkInDate)}, 체크아웃: ${formatDate(checkOutDate)}): ${error.message}`);
@@ -72,16 +69,20 @@ export const loadUserReservations = async (contract, account) => {
         const reservationIds = await contract.methods.getUserReservations().call({ from: account });
         const reservations = await contract.methods.getReservationsByIds(reservationIds).call();
         return reservations.map(reservation => {
-            const checkInDate = new Date(reservation.checkInDate * 1000);
-            const checkOutDate = new Date(reservation.checkOutDate * 1000);
+            
+            const checkInDate = new Date(parseInt(reservation.checkInDate) * 1000);
+            const checkOutDate = new Date(parseInt(reservation.checkOutDate) * 1000);
+            
             return {
                 ...reservation,
-                checkInDate,
-                checkOutDate,
-                formattedCheckInDate: formatDate(checkInDate),
-                formattedCheckOutDate: formatDate(checkOutDate),
+                id: Number(reservation.id),
+                hotelId: Number(reservation.hotelId),
+                roomNumber: Number(reservation.roomNumber),
+                checkInDate: Number(checkInDate),
+                checkOutDate: Number(checkOutDate),
                 duration: daysBetween(checkInDate, checkOutDate),
-                isValidDate: isValidDate(checkInDate) && isValidDate(checkOutDate)
+                isValidDate: isValidDate(new Date(Number(reservation.checkInDate) * 1000)) && 
+                             isValidDate(new Date(Number(reservation.checkOutDate) * 1000))
             };
         });
     } catch (error) {

@@ -194,3 +194,4 @@ export const filterHotelsWithAvailableRooms = async (contract, hotels, checkInDa
         throw new Error(`호텔 필터링 실패: ${error.message}`);
     }
 };
+

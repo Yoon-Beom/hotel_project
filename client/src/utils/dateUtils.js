@@ -1,5 +1,4 @@
 // client/src/utils/dateUtils.js
-
 /**
  * 날짜 관련 유틸리티 함수들
  * @module dateUtils
@@ -52,7 +51,9 @@ export const daysBetween = (date1, date2) => {
  * @param {Date} date - 변환할 Date 객체
  * @returns {number} Unix 타임스탬프
  */
-export const dateToUnixTimestamp = (date) => Math.floor(date.getTime() / 1000);
+export const dateToUnixTimestamp = (date) => {
+    return Math.floor(date.getTime() / 1000).toString();
+};
 
 /**
  * Unix 타임스탬프를 JavaScript Date 객체로 변환합니다.
@@ -76,3 +77,4 @@ export const getCurrentDate = () => new Date();
  * @returns {boolean} 날짜의 유효성 여부
  */
 export const isValidDate = (date) => date instanceof Date && !isNaN(date);
+

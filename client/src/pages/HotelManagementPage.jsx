@@ -62,39 +62,3 @@ const HotelManagementPage = () => {
 };
 
 export default HotelManagementPage;
-
-
-
-// import React, { useEffect, useCallback, useMemo } from 'react';
-// import useHotel from '../hooks/useHotel';
-
-// const HotelManagementPage = React.memo(() => {
-//     console.log('HotelManagementPage rendered');
-//     const { getUserHotels, fetchHotels, isLoading, error } = useHotel();
-
-//     const memoizedFetchHotels = useCallback(() => {
-//         fetchHotels();
-//     }, [fetchHotels]);
-
-//     useEffect(() => {
-//         memoizedFetchHotels();
-//     }, [memoizedFetchHotels]);
-
-//     const userHotels = useMemo(() => getUserHotels(), [getUserHotels]);
-
-//     return (
-//         <div className="hotel-management-page">
-//             <h1>내 호텔 관리</h1>
-//             {isLoading && <p>로딩 중...</p>}
-//             {error && <p>에러: {error}</p>}
-//             <ul>
-//                 {userHotels.map(hotel => (
-//                     <li key={hotel.id}>{hotel.name}</li>
-//                 ))}
-//             </ul>
-//         </div>
-//     );
-// });
-
-// export default HotelManagementPage;
-

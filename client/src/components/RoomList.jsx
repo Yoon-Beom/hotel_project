@@ -26,6 +26,7 @@ const RoomList = ({ hotelId }) => {
             if (hotelId) {
                 const fetchedRooms = await fetchRooms(hotelId);
                 setRooms(fetchedRooms);
+                console.log("fetchedRooms: ", fetchedRooms);
             }
         };
         loadRooms();
@@ -41,7 +42,7 @@ const RoomList = ({ hotelId }) => {
             <ul>
                 {rooms.map((room) => (
                     <li key={room.roomNumber} className="room-item">
-                        <p>방 번호: {room.roomNumber}</p>
+                        <p>방 번호: {room.roomNumber}호</p>
                         <p>가격: {web3.utils.fromWei(room.price, 'ether')} ETH</p>
                         <p>IPFS 해시: {room.ipfsHash}</p>
                         <p>상태: {room.status}</p>
