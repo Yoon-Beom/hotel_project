@@ -33,14 +33,22 @@ export const getMonthlyReservations = async (contract) => {
  */
 export const getDailyReservations = async (contract, year, month) => {
     const daysInMonth = new Date(year, month, 0).getDate();
-    const dailyReservations = {};
-
-    for (let day = 1; day <= daysInMonth; day++) {
-        const count = await contract.methods.getHotelReservationsForDate(year, month, day).call();
-        dailyReservations[day] = parseInt(count);
+    const dailyReservations = await contract.methods.getDailyReservationsForMonth(year, month, daysInMonth).call();
+    // 배열을 객체로 변환
+    const result = {};
+    for (let i = 0; i < dailyReservations.length; i++) {
+        result[i + 1] = parseInt(dailyReservations[i]);
     }
 
-    return dailyReservations;
+    for (let i = 2024; i <= 2026; i++) {
+        for (let j = 1; j <= 12; j++) {
+            const IndaysInMonth = new Date(year, month, 0).getDate();
+            const IndailyReservations = await contract.methods.getDailyReservationsForMonth(i, j, IndaysInMonth).call();
+            console.log(i + "년 " + j + "월 : ", IndailyReservations);
+        }
+    }
+
+    return result;
 };
 
 /**
@@ -57,16 +65,17 @@ export const getReservationsByDate = async (contract, date) => {
     const month = date.getMonth() + 1;
     const day = date.getDate();
 
-    const hotelIds = await contract.methods.getAllHotelIds().call();
+    const hotelCount = await contract.methods.hotelCount().call();
     const reservationsByHotel = {};
 
-    for (let hotelId of hotelIds) {
+    for (let hotelId = 1; hotelId <= hotelCount; hotelId++) {
         reservationsByHotel[hotelId] = {};
         for (let year = startYear; year <= currentYear; year++) {
-            const count = await contract.methods.getHotelReservationsForDate(year, month, day, hotelId).call();
+            const count = await contract.methods.getHotelReservationsForDate(hotelId, year * 10000 + month * 100 + day).call();
             reservationsByHotel[hotelId][year] = parseInt(count);
         }
     }
 
     return reservationsByHotel;
 };
+

@@ -2,7 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
-// import HomePage from './pages/HomePage';
+import HomePage from './pages/HomePage';
 import HotelManagementPage from './pages/HotelManagementPage';
 import HotelList from './components/HotelList';
 // import HotelDetailsPage from './pages/HotelDetailsPage';
@@ -17,8 +17,8 @@ function App() {
         <Router>
             <Layout>
                 <Routes>
-                    {/* <Route path="/" element={<HomePage />} /> */}
-                    <Route path="/" element={<HotelList />} />
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/hotellist" element={<HotelList />} />
                     <Route path="/manage" element={<HotelManagementPage />} />
                     {/* <Route path="/hotel/:id" element={<HotelDetailsPage />} /> */}
                     <Route path="/reservation/:hotelId/:roomId" element={<ReservationPage />} />

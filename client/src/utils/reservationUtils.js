@@ -22,13 +22,17 @@ import { dateToUnixTimestamp, formatDate, isValidDate, daysBetween } from './dat
  */
 export const createReservation = async (contract, hotelId, roomId, checkInDate, checkOutDate, price, account) => {
     try {
+        console.log("formatDate(checkInDate): ", formatDate(checkInDate));
+        console.log("formatDate(checkOutDate): ", formatDate(checkOutDate));
+        console.log("dateToUnixTimestamp(checkInDate): ", dateToUnixTimestamp(checkInDate));
+        console.log("dateToUnixTimestamp(checkOutDate): ", dateToUnixTimestamp(checkOutDate));
         const result = await contract.methods.createReservation(
             hotelId,
             roomId,
             dateToUnixTimestamp(checkInDate),
             dateToUnixTimestamp(checkOutDate),
             "dummyIPFS"
-        ).send({ from: account, gas: 500000, value: price })  // value 추가
+        ).send({ from: account, gas: 1000000, value: price })  // value 추가
 
         return result.events.ReservationCreated.returnValues.reservationId;
     } catch (error) {
