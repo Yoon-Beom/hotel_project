@@ -16,8 +16,12 @@ export const useStatistics = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    // =============================================================================
+    // 월별 통계
+    // =============================================================================
+
     /**
-     * 최근 3년간 월별 예약 수를 가져옵니다.
+     * 최근 4년간 월별 예약 수를 가져옵니다.
      * @async
      * @function fetchMonthlyReservations
      * @returns {Promise<Object|null>} 월별 예약 수 객체 또는 null
@@ -39,6 +43,10 @@ export const useStatistics = () => {
             setIsLoading(false);
         }
     }, [contract]);
+
+    // =============================================================================
+    // 일별 통계
+    // =============================================================================
 
     /**
      * 특정 월의 일별 예약 수를 가져옵니다.
@@ -66,11 +74,15 @@ export const useStatistics = () => {
         }
     }, [contract]);
 
+    // =============================================================================
+    // 호텔별 통계
+    // =============================================================================
+
     /**
      * 특정 날짜의 연도별, 호텔별 예약 수를 가져옵니다.
      * @async
      * @function fetchReservationsByDate
-     * @param {Date} date - 특정 날짜
+     * @param {number} date - 특정 날짜 (YYYYMMDD 형식)
      * @returns {Promise<Object|null>} 호텔별, 연도별 예약 수 객체 또는 null
      */
     const fetchReservationsByDate = useCallback(async (date) => {

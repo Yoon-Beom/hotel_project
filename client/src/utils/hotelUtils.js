@@ -1,11 +1,14 @@
 // client/src/utils/hotelUtils.js
-import { loadRooms, checkRoomAvailability  } from './roomUtils';
-import { formatDate, parseDate, isValidDate } from './dateUtils';
+import { loadRooms, checkRoomAvailability } from './roomUtils';
 
 /**
  * 호텔 관련 유틸리티 함수들을 포함하는 모듈
  * @module hotelUtils
  */
+
+// =============================================================================
+// 호텔 관리
+// =============================================================================
 
 /**
  * 새로운 호텔을 추가합니다.
@@ -23,15 +26,18 @@ export const addHotel = async (contract, account, name, ipfsHash) => {
         const transaction = await contract.methods.addHotel(name, ipfsHash).send({ from: account });
         const hotelId = transaction.events.HotelAdded.returnValues.hotelId;
         const newHotel = await contract.methods.hotels(hotelId).call();
-        return { 
-            ...newHotel, 
-            id: hotelId,
-            createdAt: formatDate(new Date()) // 호텔 생성 날짜 추가
+        return {
+            ...newHotel,
+            id: hotelId
         };
     } catch (error) {
         throw new Error(`호텔 추가 실패: ${error.message}`);
     }
 };
+
+// =============================================================================
+// 호텔 조회
+// =============================================================================
 
 /**
  * 모든 호텔을 로드합니다.
@@ -49,8 +55,7 @@ export const loadHotels = async (contract) => {
             const hotel = await contract.methods.hotels(i).call();
             hotelList.push({
                 ...hotel,
-                id: i,
-                createdAt: formatDate(new Date(hotel.createdAt * 1000)) // Unix 타임스탬프를 Date 객체로 변환 후 포맷팅
+                id: i
             });
         }
         return hotelList;
@@ -80,7 +85,7 @@ export const loadHotelsWithPagination = async (contract, page, pageSize) => {
             const hotel = await contract.methods.hotels(i).call();
             hotelList.push({
                 ...hotel,
-                createdAt: formatDate(new Date(hotel.createdAt * 1000)) // Unix 타임스탬프를 Date 객체로 변환 후 포맷팅
+                id: i
             });
         }
 
@@ -103,39 +108,34 @@ export const loadHotelInfo = async (contract, hotelId) => {
     try {
         const hotel = await contract.methods.hotels(hotelId).call();
         const rooms = await loadRooms(contract, hotelId);
-        return { 
-            ...hotel, 
-            rooms,
-            createdAt: formatDate(new Date(hotel.createdAt * 1000)) // Unix 타임스탬프를 Date 객체로 변환 후 포맷팅
+        return {
+            ...hotel,
+            id: hotelId,
+            rooms
         };
     } catch (error) {
         throw new Error(`호텔 정보 로딩 실패: ${error.message}`);
     }
 };
 
+// =============================================================================
+// 호텔 검색 및 필터링
+// =============================================================================
+
 /**
  * 호텔 목록을 검색합니다.
  * @function searchHotels
  * @param {Array} hotels - 전체 호텔 목록
  * @param {string} searchTerm - 검색어
- * @param {Date} [startDate] - 검색 시작 날짜 (선택적)
- * @param {Date} [endDate] - 검색 종료 날짜 (선택적)
  * @returns {Array} 검색 결과 호텔 목록
  */
-export const searchHotels = (hotels, searchTerm, startDate, endDate) => {
+export const searchHotels = (hotels, searchTerm) => {
     const lowercasedTerm = searchTerm.toLowerCase();
-    return hotels.filter(hotel => {
-        const nameMatch = hotel.name.toLowerCase().includes(lowercasedTerm);
-        const locationMatch = hotel.location.toLowerCase().includes(lowercasedTerm);
-        
-        if (startDate && endDate && isValidDate(startDate) && isValidDate(endDate)) {
-            const hotelDate = parseDate(hotel.createdAt);
-            return (nameMatch || locationMatch) && hotelDate >= startDate && hotelDate <= endDate;
-        }
-        
-        return nameMatch || locationMatch;
-    });
+    return hotels.filter(hotel =>
+        hotel.name.toLowerCase().includes(lowercasedTerm)
+    );
 };
+
 
 /**
  * 사용자의 호텔을 필터링합니다.
@@ -156,8 +156,8 @@ export const getUserHotels = (hotels, account) => {
  * @function filterHotelsWithAvailableRooms
  * @param {Object} contract - 호텔 예약 스마트 컨트랙트 인스턴스
  * @param {Array} hotels - 필터링할 호텔 목록
- * @param {Date} checkInDate - 체크인 날짜
- * @param {Date} checkOutDate - 체크아웃 날짜
+ * @param {number} checkInDate - 체크인 날짜 (YYYYMMDD 형식의 정수)
+ * @param {number} checkOutDate - 체크아웃 날짜 (YYYYMMDD 형식의 정수)
  * @returns {Promise<Array>} 예약 가능한 객실이 있는 호텔 목록
  * @throws {Error} 호텔 필터링 실패 시 에러
  */
@@ -170,10 +170,10 @@ export const filterHotelsWithAvailableRooms = async (contract, hotels, checkInDa
             const availableRooms = await Promise.all(
                 rooms.map(async (room) => {
                     const isAvailable = await checkRoomAvailability(
-                        contract, 
-                        hotel.id, 
-                        room.roomNumber, 
-                        checkInDate, 
+                        contract,
+                        hotel.id,
+                        room.roomNumber,
+                        checkInDate,
                         checkOutDate
                     );
                     return isAvailable;
@@ -194,4 +194,3 @@ export const filterHotelsWithAvailableRooms = async (contract, hotels, checkInDa
         throw new Error(`호텔 필터링 실패: ${error.message}`);
     }
 };
-

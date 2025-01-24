@@ -1,10 +1,14 @@
 // client/src/utils/reservationUtils.js
-import { dateToUnixTimestamp, formatDate, isValidDate, daysBetween } from './dateUtils';
+import { formatDate, isValidDate, daysBetween } from './dateUtils';
 
 /**
  * 예약 관련 유틸리티 함수들
  * @module reservationUtils
  */
+
+// =============================================================================
+// 예약 생성 및 관리
+// =============================================================================
 
 /**
  * 스마트 컨트랙트를 통해 새로운 예약을 생성합니다.
@@ -12,31 +16,29 @@ import { dateToUnixTimestamp, formatDate, isValidDate, daysBetween } from './dat
  * @function createReservation
  * @param {Object} contract - 호텔 예약 스마트 컨트랙트 인스턴스
  * @param {number} hotelId - 호텔 ID
- * @param {number} roomId - 객실 ID
- * @param {Date} checkInDate - 체크인 날짜
- * @param {Date} checkOutDate - 체크아웃 날짜
- * @param {string} price - 예약 가격 (Wei 단위)
+ * @param {number} roomNumber - 객실 번호
+ * @param {number} checkInDate - 체크인 날짜 (YYYYMMDD 형식)
+ * @param {number} checkOutDate - 체크아웃 날짜 (YYYYMMDD 형식)
+ * @param {string} ipfsHash - 예약 추가 정보의 IPFS 해시
  * @param {string} account - 사용자 계정 주소
  * @returns {Promise<number>} 생성된 예약 ID
  * @throws {Error} 예약 생성 실패 시 에러
  */
-export const createReservation = async (contract, hotelId, roomId, checkInDate, checkOutDate, price, account) => {
+export const createReservation = async (contract, hotelId, roomNumber, checkInDate, checkOutDate, ipfsHash, account) => {
     try {
-        console.log("formatDate(checkInDate): ", formatDate(checkInDate));
-        console.log("formatDate(checkOutDate): ", formatDate(checkOutDate));
-        console.log("dateToUnixTimestamp(checkInDate): ", dateToUnixTimestamp(checkInDate));
-        console.log("dateToUnixTimestamp(checkOutDate): ", dateToUnixTimestamp(checkOutDate));
+        const nightCount = daysBetween(checkInDate.toString(), checkOutDate.toString());
         const result = await contract.methods.createReservation(
             hotelId,
-            roomId,
-            dateToUnixTimestamp(checkInDate),
-            dateToUnixTimestamp(checkOutDate),
-            "dummyIPFS"
-        ).send({ from: account, gas: 1000000, value: price })  // value 추가
+            roomNumber,
+            checkInDate,
+            checkOutDate,
+            nightCount,
+            ipfsHash
+        ).send({ from: account, gas: 1000000 });
 
-        return result.events.ReservationCreated.returnValues.reservationId;
+        return result.events.ReservationCreated.returnValues.id;
     } catch (error) {
-        throw new Error(`예약 생성 실패 (호텔 ID: ${hotelId}, 객실 ID: ${roomId}, 체크인: ${formatDate(checkInDate)}, 체크아웃: ${formatDate(checkOutDate)}): ${error.message}`);
+        throw new Error(`예약 생성 실패 (호텔 ID: ${hotelId}, 객실 번호: ${roomNumber}, 체크인: ${checkInDate}, 체크아웃: ${checkOutDate}): ${error.message}`);
     }
 };
 
@@ -60,6 +62,30 @@ export const cancelReservation = async (contract, reservationId, account) => {
 };
 
 /**
+ * 예약에 대한 평점을 남깁니다.
+ * @async
+ * @function rateReservation
+ * @param {Object} contract - 호텔 예약 스마트 컨트랙트 인스턴스
+ * @param {number} reservationId - 평가할 예약 ID
+ * @param {number} rating - 평점 (1-5)
+ * @param {string} account - 사용자 계정 주소
+ * @returns {Promise<boolean>} 평가 성공 여부
+ * @throws {Error} 예약 평가 실패 시 에러
+ */
+export const rateReservation = async (contract, reservationId, rating, account) => {
+    try {
+        await contract.methods.rateReservation(reservationId, rating).send({ from: account });
+        return true;
+    } catch (error) {
+        throw new Error(`예약 평가 실패 (예약 ID: ${reservationId}): ${error.message}`);
+    }
+};
+
+// =============================================================================
+// 예약 조회
+// =============================================================================
+
+/**
  * 사용자의 모든 예약을 로드합니다.
  * @async
  * @function loadUserReservations
@@ -72,23 +98,18 @@ export const loadUserReservations = async (contract, account) => {
     try {
         const reservationIds = await contract.methods.getUserReservations().call({ from: account });
         const reservations = await contract.methods.getReservationsByIds(reservationIds).call();
-        return reservations.map(reservation => {
-            
-            const checkInDate = new Date(parseInt(reservation.checkInDate) * 1000);
-            const checkOutDate = new Date(parseInt(reservation.checkOutDate) * 1000);
-            
-            return {
-                ...reservation,
-                id: Number(reservation.id),
-                hotelId: Number(reservation.hotelId),
-                roomNumber: Number(reservation.roomNumber),
-                checkInDate: Number(checkInDate),
-                checkOutDate: Number(checkOutDate),
-                duration: daysBetween(checkInDate, checkOutDate),
-                isValidDate: isValidDate(new Date(Number(reservation.checkInDate) * 1000)) && 
-                             isValidDate(new Date(Number(reservation.checkOutDate) * 1000))
-            };
-        });
+        return reservations.map(reservation => ({
+            ...reservation,
+            id: Number(reservation.id),
+            hotelId: Number(reservation.hotelId),
+            roomNumber: Number(reservation.roomNumber),
+            checkInDate: Number(reservation.checkInDate),
+            checkOutDate: Number(reservation.checkOutDate),
+            nightCount: Number(reservation.nightCount),
+            status: Number(reservation.status),
+            amount: Number(reservation.amount),
+            rating: Number(reservation.rating)
+        }));
     } catch (error) {
         throw new Error(`사용자 예약 로딩 실패 (계정: ${account}): ${error.message}`);
     }
@@ -106,35 +127,38 @@ export const loadUserReservations = async (contract, account) => {
 export const loadReservation = async (contract, reservationId) => {
     try {
         const reservation = await contract.methods.getReservation(reservationId).call();
-        const checkInDate = new Date(reservation.checkInDate * 1000);
-        const checkOutDate = new Date(reservation.checkOutDate * 1000);
         return {
             ...reservation,
-            checkInDate,
-            checkOutDate,
-            formattedCheckInDate: formatDate(checkInDate),
-            formattedCheckOutDate: formatDate(checkOutDate),
-            duration: daysBetween(checkInDate, checkOutDate),
-            isValidDate: isValidDate(checkInDate) && isValidDate(checkOutDate)
+            id: Number(reservation.id),
+            hotelId: Number(reservation.hotelId),
+            roomNumber: Number(reservation.roomNumber),
+            checkInDate: Number(reservation.checkInDate),
+            checkOutDate: Number(reservation.checkOutDate),
+            nightCount: Number(reservation.nightCount),
+            status: Number(reservation.status),
+            amount: Number(reservation.amount),
+            rating: Number(reservation.rating)
         };
     } catch (error) {
         throw new Error(`예약 정보 로딩 실패 (예약 ID: ${reservationId}): ${error.message}`);
     }
 };
 
+// =============================================================================
+// 예약 유효성 검사 및 계산
+// =============================================================================
+
 /**
  * 예약 가능한 날짜인지 확인합니다.
  * @function isValidReservationDate
- * @param {Date} checkInDate - 체크인 날짜
- * @param {Date} checkOutDate - 체크아웃 날짜
+ * @param {number} checkInDate - 체크인 날짜 (YYYYMMDD 형식)
+ * @param {number} checkOutDate - 체크아웃 날짜 (YYYYMMDD 형식)
  * @returns {boolean} 예약 가능 여부
  */
 export const isValidReservationDate = (checkInDate, checkOutDate) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    return isValidDate(checkInDate) &&
-        isValidDate(checkOutDate) &&
+    const today = Number(formatDate(new Date()));
+    return isValidDate(checkInDate.toString()) &&
+        isValidDate(checkOutDate.toString()) &&
         checkInDate >= today &&
         checkOutDate > checkInDate;
 };
@@ -142,15 +166,37 @@ export const isValidReservationDate = (checkInDate, checkOutDate) => {
 /**
  * 예약 기간을 계산합니다.
  * @function calculateReservationDuration
- * @param {Date} checkInDate - 체크인 날짜
- * @param {Date} checkOutDate - 체크아웃 날짜
+ * @param {number} checkInDate - 체크인 날짜 (YYYYMMDD 형식)
+ * @param {number} checkOutDate - 체크아웃 날짜 (YYYYMMDD 형식)
  * @returns {Object} 예약 기간 정보
  */
 export const calculateReservationDuration = (checkInDate, checkOutDate) => {
-    const nights = daysBetween(checkInDate, checkOutDate);
+    const nights = daysBetween(checkInDate.toString(), checkOutDate.toString());
     return {
         nights,
-        formattedCheckIn: formatDate(checkInDate),
-        formattedCheckOut: formatDate(checkOutDate)
+        checkInDate,
+        checkOutDate
+    };
+};
+
+/**
+ * 특정 기간 동안의 객실 가격을 계산합니다.
+ * @function calculateRoomPrice
+ * @param {Object} room - 객실 정보
+ * @param {number} checkInDate - 체크인 날짜 (YYYYMMDD 형식)
+ * @param {number} checkOutDate - 체크아웃 날짜 (YYYYMMDD 형식)
+ * @returns {Object} 총 가격과 숙박 일수
+ */
+export const calculateRoomPrice = (room, checkInDate, checkOutDate) => {
+    if (!isValidDate(checkInDate.toString()) || !isValidDate(checkOutDate.toString())) {
+        throw new Error('유효하지 않은 날짜입니다.');
+    }
+    const numberOfNights = daysBetween(checkInDate.toString(), checkOutDate.toString());
+    const totalPrice = room.price * numberOfNights;
+    return {
+        totalPrice,
+        numberOfNights,
+        checkInDate,
+        checkOutDate
     };
 };

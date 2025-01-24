@@ -110,6 +110,9 @@ contract HotelBooking {
     /// @notice 날짜 (YYYYMM) -> 호텔 총 예약 수
     mapping(uint32 => uint256) public monthlyTotalReservationCount;
 
+    // =============================================================================
+    // 이벤트
+    // =============================================================================
     /// @notice 새로운 호텔이 추가될 때 발생하는 이벤트
     /// @param hotelId 추가된 호텔의 ID
     /// @param name 호텔 이름
@@ -120,9 +123,6 @@ contract HotelBooking {
         address indexed manager
     );
 
-    // =============================================================================
-    // 이벤트
-    // =============================================================================
     /// @notice 새로운 객실이 추가될 때 발생하는 이벤트
     /// @param hotelId 객실이 추가된 호텔의 ID
     /// @param roomNumber 추가된 객실 번호
@@ -220,39 +220,39 @@ contract HotelBooking {
     }
 
     /// @notice 특정 날짜에 객실이 예약 가능한지 확인하는 함수
-    /// @param hotelId 호텔 ID
-    /// @param roomNumber 객실 번호
-    /// @param date 확인할 날짜 (YYYYMMDD 형식)
+    /// @param _hotelId 호텔 ID
+    /// @param _roomNumber 객실 번호
+    /// @param _date 확인할 날짜 (YYYYMMDD 형식)
     /// @return 예약 가능 여부
     function isDateAvailable(
-        uint32 hotelId,
-        uint16 roomNumber,
-        uint32 date
+        uint32 _hotelId,
+        uint16 _roomNumber,
+        uint32 _date
     ) public view returns (bool) {
         return
-            roomDateStatus[hotelId][roomNumber][date] ==
+            roomDateStatus[_hotelId][_roomNumber][_date] ==
             RoomDateStatus.Available;
     }
 
     /// @notice 특정 기간에 대한 객실 예약 가능 여부 확인
-    /// @param hotelId 호텔 ID
-    /// @param roomNumber 객실 번호
-    /// @param dates 확인할 날짜들의 배열 (YYYYMMDD 형식)
+    /// @param _hotelId 호텔 ID
+    /// @param _roomNumber 객실 번호
+    /// @param _dates 확인할 날짜들의 배열 (YYYYMMDD 형식)
     /// @return 예약 가능 여부
     function isRoomAvailable(
-        uint32 hotelId,
-        uint16 roomNumber,
-        uint32[] memory dates
+        uint32 _hotelId,
+        uint16 _roomNumber,
+        uint32[] memory _dates
     ) public view returns (bool) {
-        require(dates.length > 0, "Empty dates array");
+        require(_dates.length > 0, "Empty dates array");
 
         uint32 currentDate = uint32(block.timestamp / 86400 + 719528) *
             100 +
             uint32((block.timestamp / 86400 + 719528) % 100);
-        require(dates[0] >= currentDate, "Cannot book past dates");
+        require(_dates[0] >= currentDate, "Cannot book past dates");
 
-        for (uint256 i = 0; i < dates.length; i++) {
-            if (!isDateAvailable(hotelId, roomNumber, dates[i])) {
+        for (uint256 i = 0; i < _dates.length; i++) {
+            if (!isDateAvailable(_hotelId, _roomNumber, _dates[i])) {
                 return false;
             }
         }
@@ -261,20 +261,20 @@ contract HotelBooking {
     }
 
     /// @notice 객실 상태 업데이트 함수
-    /// @param hotelId 호텔 ID
-    /// @param roomNumber 객실 번호
-    /// @param dates 업데이트할 날짜들의 배열 (YYYYMMDD 형식)
-    /// @param status 설정할 객실 상태
+    /// @param _hotelId 호텔 ID
+    /// @param _roomNumber 객실 번호
+    /// @param _dates 업데이트할 날짜들의 배열 (YYYYMMDD 형식)
+    /// @param _status 설정할 객실 상태
     function updateRoomDateStatus(
-        uint32 hotelId,
-        uint16 roomNumber,
-        uint32[] memory dates,
-        RoomDateStatus status
+        uint32 _hotelId,
+        uint16 _roomNumber,
+        uint32[] memory _dates,
+        RoomDateStatus _status
     ) internal {
-        require(dates.length > 0, "Empty dates array");
+        require(_dates.length > 0, "Empty dates array");
 
-        for (uint256 i = 0; i < dates.length; i++) {
-            roomDateStatus[hotelId][roomNumber][dates[i]] = status;
+        for (uint256 i = 0; i < _dates.length; i++) {
+            roomDateStatus[_hotelId][_roomNumber][_dates[i]] = _status;
         }
     }
 
@@ -461,16 +461,16 @@ contract HotelBooking {
     }
 
     /// @notice 여러 예약 정보를 한 번에 조회하는 함수
-    /// @param reservationIds 조회할 예약 ID 배열
+    /// @param _reservationIds 조회할 예약 ID 배열
     /// @return 예약 정보 배열
     function getReservationsByIds(
-        uint64[] calldata reservationIds
+        uint64[] calldata _reservationIds
     ) public view returns (Reservation[] memory) {
         Reservation[] memory userReservationList = new Reservation[](
-            reservationIds.length
+            _reservationIds.length
         );
-        for (uint16 i = 0; i < reservationIds.length; i++) {
-            userReservationList[i] = reservations[reservationIds[i]];
+        for (uint16 i = 0; i < _reservationIds.length; i++) {
+            userReservationList[i] = reservations[_reservationIds[i]];
         }
         return userReservationList;
     }
@@ -533,21 +533,19 @@ contract HotelBooking {
     }
 
     /// @notice 특정 월의 일별 예약 수를 반환합니다. (모든 호텔 통합)
-    /// @param year 조회할 연도
-    /// @param month 조회할 월
-    /// @param endDay 조회할 마지막 일 (1-31)
+    /// @param _yearMonth 조회할 연월 (YYYYMM 형식)
+    /// @param _endDay 조회할 마지막 일 (1-31)
     /// @return 해당 월의 일별 예약 수 배열
     function getDailyReservationsForMonth(
-        uint16 year,
-        uint8 month,
-        uint8 endDay
+        uint32 _yearMonth,
+        uint8 _endDay
     ) public view returns (uint256[] memory) {
-        require(endDay >= 1 && endDay <= 31, "Invalid end day");
-        uint256[] memory dailyReservations = new uint256[](endDay);
+        require(_endDay >= 1 && _endDay <= 31, "Invalid end day");
+        uint256[] memory dailyReservations = new uint256[](_endDay);
 
-        uint32 baseDate = (uint32(year) * 10000) + (uint32(month) * 100);
+        uint32 baseDate = _yearMonth * 100;
 
-        for (uint8 day = 1; day <= endDay; day++) {
+        for (uint8 day = 1; day <= _endDay; day++) {
             uint32 date = baseDate + day;
             uint256 reservationCount = 0;
 

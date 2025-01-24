@@ -1,5 +1,5 @@
 // client/src/hooks/useHotel.js
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import useWeb3 from './useWeb3';
 import {
     addHotel as addHotelUtil,
@@ -47,6 +47,40 @@ export const useHotel = () => {
         setError(errorMessage);
     }, []);
 
+    // =============================================================================
+    // 호텔 관리
+    // =============================================================================
+
+    /**
+     * 새로운 호텔을 추가합니다.
+     * @async
+     * @function addHotel
+     * @param {string} hotelName - 호텔 이름
+     * @param {string} ipfsHash - IPFS 해시
+     * @returns {Promise<boolean>} 추가 성공 여부
+     */
+    const addHotel = useCallback(async (hotelName, ipfsHash) => {
+        if (!contract || !account) {
+            setErrorState("Contract or account not initialized");
+            return false;
+        }
+        try {
+            setLoadingState(true);
+            await addHotelUtil(contract, account, hotelName, ipfsHash);
+            setErrorState(null);
+            return true;
+        } catch (err) {
+            setErrorState(err.message);
+            return false;
+        } finally {
+            setLoadingState(false);
+        }
+    }, [contract, account, setLoadingState, setErrorState]);
+
+    // =============================================================================
+    // 호텔 조회
+    // =============================================================================
+
     /**
      * 모든 호텔 정보를 불러옵니다.
      * @async
@@ -61,7 +95,7 @@ export const useHotel = () => {
         }
 
         const now = Date.now();
-        if (!force && now - lastFetchTime < 60000) { // 1분 이내 재호출 방지
+        if (!force && now - lastFetchTime < 60000) {
             console.log("아직 때가 아니라서 가져오기를 건너뜁니다.");
             return;
         }
@@ -83,7 +117,7 @@ export const useHotel = () => {
             } finally {
                 setLoadingState(false);
             }
-        }, 100); // 100ms 디바운스
+        }, 100);
     }, [contract, lastFetchTime, setLoadingState, setErrorState]);
 
     /**
@@ -137,38 +171,16 @@ export const useHotel = () => {
         }
     }, [contract, setLoadingState, setErrorState]);
 
-    /**
-     * 새로운 호텔을 추가합니다.
-     * @async
-     * @function addHotel
-     * @param {string} hotelName - 호텔 이름
-     * @param {string} ipfsHash - IPFS 해시
-     * @returns {Promise<boolean>} 추가 성공 여부
-     */
-    const addHotel = useCallback(async (hotelName, ipfsHash) => {
-        if (!contract || !account) {
-            setErrorState("Contract or account not initialized");
-            return false;
-        }
-        try {
-            setLoadingState(true);
-            await addHotelUtil(contract, account, hotelName, ipfsHash);
-            setErrorState(null);
-            return true;
-        } catch (err) {
-            setErrorState(err.message);
-            return false;
-        } finally {
-            setLoadingState(false);
-        }
-    }, [contract, account, setLoadingState, setErrorState]);
+    // =============================================================================
+    // 호텔 검색 및 필터링
+    // =============================================================================
 
     /**
      * 검색어와 날짜를 기준으로 호텔을 검색합니다.
      * @function searchHotelsFunc
      * @param {string} searchTerm - 검색어
-     * @param {Date} startDate - 검색 시작 날짜
-     * @param {Date} endDate - 검색 종료 날짜
+     * @param {number} startDate - 검색 시작 날짜 (YYYYMMDD 형식)
+     * @param {number} endDate - 검색 종료 날짜 (YYYYMMDD 형식)
      * @returns {Array} 검색 결과 호텔 목록
      */
     const searchHotelsFunc = useCallback((searchTerm, startDate, endDate) => {
@@ -188,8 +200,8 @@ export const useHotel = () => {
      * 특정 날짜 범위 내에서 예약 가능한 호텔을 필터링합니다.
      * @async
      * @function filterAvailableHotels
-     * @param {Date} checkInDate - 체크인 날짜
-     * @param {Date} checkOutDate - 체크아웃 날짜
+     * @param {number} checkInDate - 체크인 날짜 (YYYYMMDD 형식)
+     * @param {number} checkOutDate - 체크아웃 날짜 (YYYYMMDD 형식)
      * @returns {Promise<Array>} 예약 가능한 호텔 목록
      */
     const filterAvailableHotels = useCallback(async (checkInDate, checkOutDate) => {

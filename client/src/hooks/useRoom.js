@@ -6,8 +6,7 @@ import {
     loadRoomInfo,
     checkRoomAvailability,
     getRoomDateStatus,
-    filterAvailableRooms,
-    calculateRoomPrice
+    filterAvailableRooms
 } from '../utils/roomUtils';
 
 /**
@@ -20,19 +19,23 @@ export const useRoom = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    // =============================================================================
+    // 객실 조회
+    // =============================================================================
+
     /**
      * 호텔의 모든 객실을 조회합니다.
      * @param {number} hotelId - 호텔 ID
+     * @returns {Promise<Array>} 객실 목록
      */
     const fetchRooms = useCallback(async (hotelId) => {
         if (!contract) {
             setError("Contract not initialized");
-            return;
+            return [];
         }
         try {
             setIsLoading(true);
             const fetchedRooms = await loadRooms(contract, hotelId);
-
             setRooms(fetchedRooms);
             setError(null);
             return fetchedRooms;
@@ -47,17 +50,17 @@ export const useRoom = () => {
     /**
      * 특정 객실의 정보를 조회합니다.
      * @param {number} hotelId - 호텔 ID
-     * @param {number} roomId - 객실 ID
+     * @param {number} roomNumber - 객실 번호
      * @returns {Promise<Object|null>} 객실 정보 또는 null
      */
-    const getRoomInfo = useCallback(async (hotelId, roomId) => {
+    const getRoomInfo = useCallback(async (hotelId, roomNumber) => {
         if (!contract) {
             setError("Contract not initialized");
             return null;
         }
         try {
             setIsLoading(true);
-            const roomInfo = await loadRoomInfo(contract, hotelId, roomId);
+            const roomInfo = await loadRoomInfo(contract, hotelId, roomNumber);
             setError(null);
             return roomInfo;
         } catch (err) {
@@ -67,6 +70,10 @@ export const useRoom = () => {
             setIsLoading(false);
         }
     }, [contract]);
+
+    // =============================================================================
+    // 객실 관리
+    // =============================================================================
 
     /**
      * 새 객실을 추가합니다.
@@ -88,10 +95,7 @@ export const useRoom = () => {
                 roomNumber,
                 web3.utils.toWei(roomPrice, 'ether'),
                 ipfsHash
-            ).send({
-                from: account,
-                gas: 500000
-            });
+            ).send({ from: account });
             await fetchRooms(hotelId);
             return true;
         } catch (err) {
@@ -102,22 +106,26 @@ export const useRoom = () => {
         }
     }, [contract, account, web3, fetchRooms]);
 
+    // =============================================================================
+    // 객실 가용성 및 상태 확인
+    // =============================================================================
+
     /**
      * 객실의 가용성을 확인합니다.
      * @param {number} hotelId - 호텔 ID
-     * @param {number} roomId - 객실 ID
-     * @param {Date} checkInDate - 체크인 날짜
-     * @param {Date} checkOutDate - 체크아웃 날짜
+     * @param {number} roomNumber - 객실 번호
+     * @param {number} checkInDate - 체크인 날짜 (YYYYMMDD 형식)
+     * @param {number} checkOutDate - 체크아웃 날짜 (YYYYMMDD 형식)
      * @returns {Promise<boolean>} 객실 가용성 여부
      */
-    const checkAvailability = useCallback(async (hotelId, roomId, checkInDate, checkOutDate) => {
+    const checkAvailability = useCallback(async (hotelId, roomNumber, checkInDate, checkOutDate) => {
         if (!contract) {
             setError("Contract not initialized");
             return false;
         }
         try {
             setIsLoading(true);
-            const isAvailable = await checkRoomAvailability(contract, hotelId, roomId, checkInDate, checkOutDate);
+            const isAvailable = await checkRoomAvailability(contract, hotelId, roomNumber, checkInDate, checkOutDate);
             setError(null);
             return isAvailable;
         } catch (err) {
@@ -131,18 +139,18 @@ export const useRoom = () => {
     /**
      * 특정 날짜의 객실 상태를 조회합니다.
      * @param {number} hotelId - 호텔 ID
-     * @param {number} roomId - 객실 ID
-     * @param {Date} date - 조회할 날짜
+     * @param {number} roomNumber - 객실 번호
+     * @param {number} date - 조회할 날짜 (YYYYMMDD 형식)
      * @returns {Promise<number>} 객실 상태 코드
      */
-    const getRoomStatus = useCallback(async (hotelId, roomId, date) => {
+    const getRoomStatus = useCallback(async (hotelId, roomNumber, date) => {
         if (!contract) {
             setError("Contract not initialized");
             return null;
         }
         try {
             setIsLoading(true);
-            const status = await getRoomDateStatus(contract, hotelId, roomId, date);
+            const status = await getRoomDateStatus(contract, hotelId, roomNumber, date);
             setError(null);
             return status;
         } catch (err) {
@@ -156,8 +164,8 @@ export const useRoom = () => {
     /**
      * 예약 가능한 객실을 필터링합니다.
      * @param {number} hotelId - 호텔 ID
-     * @param {Date} checkInDate - 체크인 날짜
-     * @param {Date} checkOutDate - 체크아웃 날짜
+     * @param {number} checkInDate - 체크인 날짜 (YYYYMMDD 형식)
+     * @param {number} checkOutDate - 체크아웃 날짜 (YYYYMMDD 형식)
      * @returns {Promise<Array>} 예약 가능한 객실 목록
      */
     const getAvailableRooms = useCallback(async (hotelId, checkInDate, checkOutDate) => {
@@ -178,17 +186,6 @@ export const useRoom = () => {
         }
     }, [contract]);
 
-    /**
-     * 객실 가격을 계산합니다.
-     * @param {Object} room - 객실 정보
-     * @param {Date} checkInDate - 체크인 날짜
-     * @param {Date} checkOutDate - 체크아웃 날짜
-     * @returns {Object} 계산된 가격 정보
-     */
-    const calculatePrice = useCallback((room, checkInDate, checkOutDate) => {
-        return calculateRoomPrice(room, checkInDate, checkOutDate);
-    }, []);
-
     return {
         rooms,
         isLoading,
@@ -198,8 +195,7 @@ export const useRoom = () => {
         addRoom,
         checkAvailability,
         getRoomStatus,
-        getAvailableRooms,
-        calculatePrice
+        getAvailableRooms
     };
 };
 
