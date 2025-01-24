@@ -1,4 +1,3 @@
-// client/src/components/HotelList.jsx
 import React, { useEffect, useState } from 'react';
 import useHotel from '../hooks/useHotel';
 import useWeb3 from '../hooks/useWeb3';
@@ -12,7 +11,7 @@ import RoomList from './RoomList';
  */
 const HotelList = () => {
     const { hotels, fetchHotels, isLoading, error } = useHotel();
-    const { web3, account } = useWeb3();
+    const { account } = useWeb3();
     const [selectedHotel, setSelectedHotel] = useState(null);
 
     useEffect(() => {
@@ -47,7 +46,7 @@ const HotelList = () => {
                     <h3 onClick={() => handleHotelSelect(hotel)} className="hotel-name">
                         {hotel.name}
                     </h3>
-                    <p>주소: {shortenAddress(hotel.manager)}</p>
+                    <p>관리자: {shortenAddress(hotel.manager)}</p>
                     <p>IPFS 해시: {hotel.ipfsHash}</p>
                     <p>활성 상태: {hotel.isActive ? '활성' : '비활성'}</p>
                     

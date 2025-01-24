@@ -1,8 +1,7 @@
-// client/src/components/ReservationList.jsx
 import React, { useEffect } from 'react';
 import useWeb3 from '../hooks/useWeb3';
 import useReservation from '../hooks/useReservation';
-import { formatDate } from '../utils/dateUtils';
+import { parseDate } from '../utils/dateUtils';
 // import '../styles/components/ReservationList.css';
 
 /**
@@ -50,11 +49,11 @@ const ReservationList = () => {
                     <h3>예약 번호: {reservation.id}</h3>
                     <p>호텔 ID: {reservation.hotelId}</p>
                     <p>객실 번호: {reservation.roomNumber}</p>
-                    <p>체크인: {formatDate(new Date(Number(reservation.checkInDate)))}</p>
-                    <p>체크아웃: {formatDate(new Date(reservation.checkOutDate))}</p>
-                    <p>금액: {web3.utils.fromWei(reservation.amount, 'ether')} ETH</p>
-                    <p>상태: {String(reservation.status) === '1' ? '확정' : '취소됨'}</p>
-                    {String(reservation.status) === '1' && (
+                    <p>체크인: {parseDate(reservation.checkInDate).toLocaleDateString()}</p>
+                    <p>체크아웃: {parseDate(reservation.checkOutDate).toLocaleDateString()}</p>
+                    <p>금액: {web3.utils.fromWei(reservation.amount.toString(), 'ether')} ETH</p>
+                    <p>상태: {reservation.status === 1 ? '확정' : '취소됨'}</p>
+                    {reservation.status === 1 && (
                         <button 
                             onClick={() => handleCancelReservation(reservation.id)}
                             className="cancel-button"

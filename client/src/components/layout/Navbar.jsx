@@ -91,7 +91,6 @@ const Navbar = () => {
                                 <span>
                                     {isLoading ? "로딩 중..." : `잔액: ${parseFloat(balance).toFixed(4)} ETH`}
                                 </span>
-                                <span>네트워크: {networkName}</span>
                             </div>
                         </div>
                     ) : (

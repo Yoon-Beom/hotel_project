@@ -20,10 +20,10 @@ const HotelCard = ({ hotel }) => {
     return (
         <div className="hotel-card">
             <h3 className="hotel-name">{hotel.name}</h3>
-            <p className="hotel-manager">주소: {shortenAddress(hotel.manager)}</p>
+            <p className="hotel-manager">관리자: {shortenAddress(hotel.manager)}</p>
             <p className="hotel-ipfs">IPFS 해시: {hotel.ipfsHash}</p>
             <p className="hotel-status">
-                상태: {hotel.isActive ? '영업 중' : '영업 중지'}
+                상태: {hotel.isActive ? '활성' : '비활성'}
             </p>
 
             <RoomList hotelId={hotel.id} />

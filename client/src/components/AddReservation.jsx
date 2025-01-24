@@ -1,8 +1,7 @@
-// client/src/components/AddReservation.jsx
 import React, { useState, useEffect } from 'react';
 import useReservation from '../hooks/useReservation';
 import useWeb3 from '../hooks/useWeb3';
-import { formatDate, parseDate } from '../utils/dateUtils';
+import { formatDate, parseDate, convertToYYYYMMDD } from '../utils/dateUtils';
 import { weiToEther, etherToWei } from '../utils/web3Utils';
 import { calculateReservationDuration, isValidReservationDate } from '../utils/reservationUtils';
 
@@ -25,8 +24,8 @@ const AddReservation = ({ hotelId, roomId, room, onReservationAdded }) => {
 
     useEffect(() => {
         if (checkIn && checkOut && room) {
-            const checkInDate = parseDate(checkIn);
-            const checkOutDate = parseDate(checkOut);
+            const checkInDate = convertToYYYYMMDD(checkIn);
+            const checkOutDate = convertToYYYYMMDD(checkOut);
             if (isValidReservationDate(checkInDate, checkOutDate)) {
                 const { nights } = calculateReservationDuration(checkInDate, checkOutDate);
                 const pricePerNight = weiToEther(room.price);
@@ -44,8 +43,8 @@ const AddReservation = ({ hotelId, roomId, room, onReservationAdded }) => {
     const handleSubmit = async () => {
         if (!checkIn || !checkOut) return;
 
-        const checkInDate = parseDate(checkIn);
-        const checkOutDate = parseDate(checkOut);
+        const checkInDate = convertToYYYYMMDD(checkIn);
+        const checkOutDate = convertToYYYYMMDD(checkOut);
 
         if (!isValidReservationDate(checkInDate, checkOutDate)) {
             alert('유효하지 않은 예약 날짜입니다.');

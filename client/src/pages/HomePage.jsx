@@ -1,6 +1,7 @@
 // client/src/pages/HomePage.jsx
 import React, { useEffect, useState } from 'react';
 import useStatistics from '../hooks/useStatistics';
+import { formatDate } from '../utils/dateUtils';
 
 /**
  * 홈페이지 컴포넌트
@@ -22,15 +23,16 @@ const HomePage = () => {
 
     useEffect(() => {
         const loadData = async () => {
+            // 월별 예약 통계
             const monthly = await fetchMonthlyReservations();
             setMonthlyData(monthly);
 
-            // 예시: 2023년 6월의 일별 예약 데이터
+            // 2025년 2월의 일별 예약 데이터
             const daily = await fetchDailyReservations(2025, 2);
             setDailyData(daily);
 
-            // 예시: 오늘 날짜의 호텔별 예약 데이터
-            const today = new Date();
+            // 오늘 날짜의 호텔별 예약 데이터
+            const today = formatDate(new Date());
             const byDate = await fetchReservationsByDate(today);
             setDateData(byDate);
         };
@@ -44,14 +46,14 @@ const HomePage = () => {
         <div>
             <h1>호텔 예약 시스템 홈페이지</h1>
 
-            <h2>최근 3년간 월별 예약 통계</h2>
+            <h2>최근 4년간 월별 예약 통계</h2>
             {monthlyData && (
                 <ul>
-                    {Object.entries(monthlyData).map(([month, yearData]) => (
-                        <li key={month}>
-                            {month}월: 
-                            {Object.entries(yearData).map(([year, count]) => (
-                                <span key={year}> {year}년: {count}건 </span>
+                    {Object.entries(monthlyData).map(([year, monthData]) => (
+                        <li key={year}>
+                            {year}년: 
+                            {monthData.map((count, index) => (
+                                <span key={index}> {index + 1}월: {count}건 </span>
                             ))}
                         </li>
                     ))}
@@ -73,8 +75,8 @@ const HomePage = () => {
                     {Object.entries(dateData).map(([hotelId, yearData]) => (
                         <li key={hotelId}>
                             호텔 ID {hotelId}: 
-                            {Object.entries(yearData).map(([year, count]) => (
-                                <span key={year}> {year}년: {count}건 </span>
+                            {yearData.map((count, index) => (
+                                <span key={index}> {new Date().getFullYear() - 3 + index}년: {count}건 </span>
                             ))}
                         </li>
                     ))}

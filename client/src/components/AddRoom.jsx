@@ -1,4 +1,3 @@
-// client/src/components/AddRoom.jsx
 import React, { useState } from 'react';
 import useRoom from '../hooks/useRoom';
 // import '../styles/components/AddRoom.css';
@@ -12,8 +11,8 @@ import useRoom from '../hooks/useRoom';
  * @returns {JSX.Element} AddRoom 컴포넌트
  */
 const AddRoom = ({ hotelId, onRoomAdded }) => {
-    const [newRoomNumber, setNewRoomNumber] = useState('');
-    const [newRoomPrice, setNewRoomPrice] = useState('');
+    const [newRoomNumber, setNewRoomNumber] = useState(0);
+    const [newRoomPrice, setNewRoomPrice] = useState(0);
     const [newRoomIpfsHash, setNewRoomIpfsHash] = useState('');
     const { addRoom, isLoading, error } = useRoom();
 
@@ -23,16 +22,16 @@ const AddRoom = ({ hotelId, onRoomAdded }) => {
      * @function handleAddRoom
      */
     const handleAddRoom = async () => {
-        if (!newRoomNumber || !newRoomPrice || !newRoomIpfsHash) {
-            alert('모든 필드를 입력해주세요.');
+        if (newRoomNumber <= 0 || newRoomPrice <= 0 || !newRoomIpfsHash) {
+            alert('모든 필드를 올바르게 입력해주세요.');
             return;
         }
 
         const success = await addRoom(hotelId, newRoomNumber, newRoomPrice, newRoomIpfsHash);
 
         if (success) {
-            setNewRoomNumber('');
-            setNewRoomPrice('');
+            setNewRoomNumber(0);
+            setNewRoomPrice(0);
             setNewRoomIpfsHash('');
             if (onRoomAdded) onRoomAdded();
         }
@@ -45,14 +44,15 @@ const AddRoom = ({ hotelId, onRoomAdded }) => {
                 type="number"
                 placeholder="객실 번호"
                 value={newRoomNumber}
-                onChange={(e) => setNewRoomNumber(e.target.value)}
+                onChange={(e) => setNewRoomNumber(parseInt(e.target.value) || 0)}
                 className="room-input"
             />
             <input
                 type="number"
+                step="0.000000000000000001"
                 placeholder="가격 (ETH)"
                 value={newRoomPrice}
-                onChange={(e) => setNewRoomPrice(e.target.value)}
+                onChange={(e) => setNewRoomPrice(parseFloat(e.target.value) || 0)}
                 className="room-input"
             />
             <input

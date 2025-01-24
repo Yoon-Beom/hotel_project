@@ -1,5 +1,4 @@
-// client/src/components/HotelManagementList.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import useHotel from '../hooks/useHotel';
 import AddRoom from './AddRoom';
 import RoomList from './RoomList';
@@ -14,14 +13,20 @@ const HotelManagementList = () => {
     const { getUserHotels, fetchHotels, isLoading, error } = useHotel();
     const [userHotels, setUserHotels] = useState([]);
 
-    useEffect(() => {
-        const loadUserHotels = async () => {
-            await fetchHotels();
-            const hotels = getUserHotels();
-            setUserHotels(hotels);
-        };
-        loadUserHotels();
+    /**
+     * 사용자의 호텔 목록을 로드하는 함수
+     * @async
+     * @function loadUserHotels
+     */
+    const loadUserHotels = useCallback(async () => {
+        await fetchHotels();
+        const hotels = getUserHotels();
+        setUserHotels(hotels);
     }, [fetchHotels, getUserHotels]);
+
+    useEffect(() => {
+        loadUserHotels();
+    }, [loadUserHotels]);
 
     /**
      * 객실 추가 후 호출되는 핸들러
@@ -29,9 +34,7 @@ const HotelManagementList = () => {
      * @function handleRoomAdded
      */
     const handleRoomAdded = async () => {
-        await fetchHotels();
-        const hotels = getUserHotels();
-        setUserHotels(hotels);
+        await loadUserHotels();
     };
 
     if (isLoading) return <div className="loading">호텔 정보를 불러오는 중...</div>;
