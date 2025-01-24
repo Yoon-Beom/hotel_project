@@ -35,9 +35,9 @@ const HotelManagementPage = () => {
      * @async
      * @function handleHotelAdded
      */
-    const handleHotelAdded = useCallback(async () => {
+    const handleHotelAdded = async () => {
         await loadUserHotels();
-    }, [loadUserHotels]);
+    };
 
     if (isLoading) return <div className="loading">호텔 정보를 불러오는 중...</div>;
     if (error) return <div className="error">에러: {error}</div>;
@@ -51,11 +51,7 @@ const HotelManagementPage = () => {
             </section>
 
             <section className="user-hotels-list">
-                {userHotels.length === 0 ? (
-                    <p>등록된 호텔이 없습니다.</p>
-                ) : (
-                    <HotelManagementList hotels={userHotels} />
-                )}
+                <HotelManagementList />
             </section>
         </div>
     );

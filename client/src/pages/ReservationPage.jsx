@@ -32,8 +32,8 @@ const ReservationPage = () => {
     const loadHotelAndRoom = useCallback(async () => {
         try {
             setIsLoading(true);
-            const hotelData = await getHotelInfo(hotelId);
-            const roomData = await getRoomInfo(hotelId, roomId);
+            const hotelData = await getHotelInfo(Number(hotelId));
+            const roomData = await getRoomInfo(Number(hotelId), Number(roomId));
             
             setHotel(hotelData);
             setRoom(roomData);
@@ -72,8 +72,8 @@ const ReservationPage = () => {
             </div>
 
             <AddReservation
-                hotelId={hotelId}
-                roomId={roomId}
+                hotelId={Number(hotelId)}
+                roomId={Number(roomId)}
                 room={room}
                 onReservationAdded={handleReservationAdded}
             />

@@ -290,6 +290,14 @@ contract HotelBooking {
     // =============================================================================
     // 함수 : 예약 관리
     // =============================================================================
+    /// @notice 새로운 예약을 생성합니다.
+    /// @dev 예약 생성 시 여러 검증 단계를 거치며, 예약 정보를 저장하고 관련 통계를 업데이트합니다.
+    /// @param _hotelId 예약할 호텔의 ID
+    /// @param _roomNumber 예약할 객실 번호
+    /// @param _checkInDate 체크인 날짜 (YYYYMMDD 형식)
+    /// @param _checkOutDate 체크아웃 날짜 (YYYYMMDD 형식)
+    /// @param _nightCount 숙박 일수
+    /// @param _ipfsHash 예약 추가 정보의 IPFS 해시
     function createReservation(
         uint32 _hotelId,
         uint16 _roomNumber,
