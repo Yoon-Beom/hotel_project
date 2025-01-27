@@ -35,9 +35,10 @@ export const useReservation = () => {
      * @param {number} checkInDate - 체크인 날짜 (YYYYMMDD 형식)
      * @param {number} checkOutDate - 체크아웃 날짜 (YYYYMMDD 형식)
      * @param {string} ipfsHash - IPFS 해시
+     * @param {string} totalPrice - 총 예약 가격 (Wei 단위)
      * @returns {Promise<boolean>} 예약 추가 성공 여부
      */
-    const addReservation = useCallback(async (hotelId, roomNumber, checkInDate, checkOutDate, ipfsHash) => {
+    const addReservation = useCallback(async (hotelId, roomNumber, checkInDate, checkOutDate, ipfsHash, totalPrice) => {
         if (!contract || !account) {
             setError("Contract or account not initialized");
             return false;
@@ -47,7 +48,7 @@ export const useReservation = () => {
         }
         try {
             setIsLoading(true);
-            await createReservation(contract, hotelId, roomNumber, checkInDate, checkOutDate, ipfsHash, account);
+            await createReservation(contract, hotelId, roomNumber, checkInDate, checkOutDate, ipfsHash, account, totalPrice);
             await fetchUserReservations();
             return true;
         } catch (err) {
@@ -56,7 +57,7 @@ export const useReservation = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [contract, account]);    
+    }, [contract, account]);
 
     /**
      * 예약을 취소합니다.

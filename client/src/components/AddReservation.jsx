@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import useReservation from '../hooks/useReservation';
 import useWeb3 from '../hooks/useWeb3';
-import { formatDate, parseDate, convertToYYYYMMDD } from '../utils/dateUtils';
+import { formatDate, convertToYYYYMMDD } from '../utils/dateUtils';
 import { weiToEther, etherToWei } from '../utils/web3Utils';
 import { calculateReservationDuration, isValidReservationDate } from '../utils/reservationUtils';
 
@@ -56,6 +56,7 @@ const AddReservation = ({ hotelId, roomId, room, onReservationAdded }) => {
             roomId,
             checkInDate,
             checkOutDate,
+            "dummyIPFS",
             etherToWei(totalPrice)
         );
 

@@ -21,12 +21,14 @@ import { formatDate, isValidDate, daysBetween } from './dateUtils';
  * @param {number} checkOutDate - 체크아웃 날짜 (YYYYMMDD 형식)
  * @param {string} ipfsHash - 예약 추가 정보의 IPFS 해시
  * @param {string} account - 사용자 계정 주소
+ * @param {string} totalPrice - 총 예약 가격 (Wei 단위)
  * @returns {Promise<number>} 생성된 예약 ID
  * @throws {Error} 예약 생성 실패 시 에러
  */
-export const createReservation = async (contract, hotelId, roomNumber, checkInDate, checkOutDate, ipfsHash, account) => {
+export const createReservation = async (contract, hotelId, roomNumber, checkInDate, checkOutDate, ipfsHash, account, totalPrice) => {
     try {
         const nightCount = daysBetween(checkInDate.toString(), checkOutDate.toString());
+
         const result = await contract.methods.createReservation(
             hotelId,
             roomNumber,
@@ -34,11 +36,11 @@ export const createReservation = async (contract, hotelId, roomNumber, checkInDa
             checkOutDate,
             nightCount,
             ipfsHash
-        ).send({ from: account, gas: 1000000 });
+        ).send({ from: account, gas: 1000000, value: totalPrice });
 
         return result.events.ReservationCreated.returnValues.id;
     } catch (error) {
-        throw new Error(`예약 생성 실패 (호텔 ID: ${hotelId}, 객실 번호: ${roomNumber}, 체크인: ${checkInDate}, 체크아웃: ${checkOutDate}): ${error.message}`);
+        throw new Error(`예약 생성 실패 (호텔 ID: ${hotelId}, 객실 번호: ${roomNumber}, 체크인: ${checkInDate}, 체크아웃: ${checkOutDate}, 가격: ${totalPrice}): ${error.message}`);
     }
 };
 

@@ -9,12 +9,12 @@ import { formatDate } from '../utils/dateUtils';
  * @returns {JSX.Element} HomePage 컴포넌트
  */
 const HomePage = () => {
-    const { 
-        fetchMonthlyReservations, 
-        fetchDailyReservations, 
+    const {
+        fetchMonthlyReservations,
+        fetchDailyReservations,
         fetchReservationsByDate,
-        isLoading, 
-        error 
+        isLoading,
+        error
     } = useStatistics();
 
     const [monthlyData, setMonthlyData] = useState(null);
@@ -26,6 +26,7 @@ const HomePage = () => {
             // 월별 예약 통계
             const monthly = await fetchMonthlyReservations();
             setMonthlyData(monthly);
+            console.log("monthly: ", monthly);
 
             // 2025년 2월의 일별 예약 데이터
             const daily = await fetchDailyReservations(2025, 2);
@@ -49,11 +50,11 @@ const HomePage = () => {
             <h2>최근 4년간 월별 예약 통계</h2>
             {monthlyData && (
                 <ul>
-                    {Object.entries(monthlyData).map(([year, monthData]) => (
-                        <li key={year}>
-                            {year}년: 
-                            {monthData.map((count, index) => (
-                                <span key={index}> {index + 1}월: {count}건 </span>
+                    {Object.entries(monthlyData).map(([month, yearData]) => (
+                        <li key={month}>
+                            {month}월:
+                            {Object.entries(yearData).map(([year, count]) => (
+                                <span key={year}> {year}년: {count}건 </span>
                             ))}
                         </li>
                     ))}
@@ -74,7 +75,7 @@ const HomePage = () => {
                 <ul>
                     {Object.entries(dateData).map(([hotelId, yearData]) => (
                         <li key={hotelId}>
-                            호텔 ID {hotelId}: 
+                            호텔 ID {hotelId}:
                             {yearData.map((count, index) => (
                                 <span key={index}> {new Date().getFullYear() - 3 + index}년: {count}건 </span>
                             ))}

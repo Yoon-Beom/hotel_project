@@ -246,9 +246,8 @@ contract HotelBooking {
     ) public view returns (bool) {
         require(_dates.length > 0, "Empty dates array");
 
-        uint32 currentDate = uint32(block.timestamp / 86400 + 719528) *
-            100 +
-            uint32((block.timestamp / 86400 + 719528) % 100);
+        uint32 currentDate = timestampToDate(block.timestamp);
+
         require(_dates[0] >= currentDate, "Cannot book past dates");
 
         for (uint256 i = 0; i < _dates.length; i++) {
@@ -281,9 +280,11 @@ contract HotelBooking {
     /// @notice 특정 호텔의 모든 방 번호를 조회하는 함수
     /// @param _hotelId 호텔 ID
     /// @return 해당 호텔의 모든 방 번호 배열
-    function getHotelRooms(
-        uint32 _hotelId
-    ) public view returns (uint16[] memory) {
+    function getHotelRooms(uint32 _hotelId)
+        public
+        view
+        returns (uint16[] memory)
+    {
         return hotelRoomsList[_hotelId];
     }
 
@@ -309,17 +310,11 @@ contract HotelBooking {
         // 1. 기본 유효성 검사
         require(hotels[_hotelId].isActive, "Hotel is not active");
         require(_checkInDate < _checkOutDate, "Invalid date range");
-        require(
-            _checkOutDate - _checkInDate == _nightCount,
-            "Night count mismatch"
-        );
 
-        uint32 currentDate = uint32(block.timestamp / 86400 + 719528) *
-            100 +
-            uint32((block.timestamp / 86400 + 719528) % 100);
+        uint32 currentDate = timestampToDate(block.timestamp);
         require(_checkInDate >= currentDate, "Cannot book past dates");
         require(
-            _checkOutDate <= currentDate + 365,
+            _checkOutDate <= currentDate + 10000,
             "Booking too far in advance"
         );
 
@@ -471,9 +466,11 @@ contract HotelBooking {
     /// @notice 여러 예약 정보를 한 번에 조회하는 함수
     /// @param _reservationIds 조회할 예약 ID 배열
     /// @return 예약 정보 배열
-    function getReservationsByIds(
-        uint64[] calldata _reservationIds
-    ) public view returns (Reservation[] memory) {
+    function getReservationsByIds(uint64[] calldata _reservationIds)
+        public
+        view
+        returns (Reservation[] memory)
+    {
         Reservation[] memory userReservationList = new Reservation[](
             _reservationIds.length
         );
@@ -486,9 +483,11 @@ contract HotelBooking {
     /// @notice 예약 정보를 조회하는 함수
     /// @param _reservationId 조회할 예약 ID
     /// @return 예약 정보
-    function getReservation(
-        uint64 _reservationId
-    ) public view returns (Reservation memory) {
+    function getReservation(uint64 _reservationId)
+        public
+        view
+        returns (Reservation memory)
+    {
         return reservations[_reservationId];
     }
 
@@ -498,21 +497,25 @@ contract HotelBooking {
     /// @notice 특정 년월에 대한 예약 수 조회 함수
     /// @param _yearMonth 조회할 년월 (YYYYMM 형식)
     /// @return 해당 월의 예약 수
-    function getMonthlyReservationCount(
-        uint32 _yearMonth
-    ) public view returns (uint256) {
+    function getMonthlyReservationCount(uint32 _yearMonth)
+        public
+        view
+        returns (uint256)
+    {
         return monthlyTotalReservationCount[_yearMonth];
     }
 
     /// @notice 특정 연도의 월별 예약 수를 출력하는 함수
     /// @param _year 조회할 연도 (YYYY 형식)
     /// @return 12개월의 예약 수 배열
-    function getMonthlyReservationsForYear(
-        uint16 _year
-    ) public view returns (uint256[12] memory) {
+    function getMonthlyReservationsForYear(uint16 _year)
+        public
+        view
+        returns (uint256[12] memory)
+    {
         uint256[12] memory monthlyCounts;
         for (uint16 month = 1; month <= 12; month++) {
-            uint32 yearMonth = (_year * 100) + month;
+            uint32 yearMonth = uint32(_year) * 100 + month;
             monthlyCounts[month - 1] = monthlyTotalReservationCount[yearMonth];
         }
         return monthlyCounts;
@@ -522,10 +525,11 @@ contract HotelBooking {
     /// @param _hotelId 호텔 ID
     /// @param _date 기준 날짜 (YYYYMMDD 형식)
     /// @return 4년간의 예약 수 배열 (3년 전부터 현재까지)
-    function getHotelReservationsForDate(
-        uint32 _hotelId,
-        uint32 _date
-    ) public view returns (uint256[4] memory) {
+    function getHotelReservationsForDate(uint32 _hotelId, uint32 _date)
+        public
+        view
+        returns (uint256[4] memory)
+    {
         uint256[4] memory reservationCounts;
         uint32 year = _date / 10000;
         uint32 month = (_date % 10000) / 100;
@@ -544,10 +548,11 @@ contract HotelBooking {
     /// @param _yearMonth 조회할 연월 (YYYYMM 형식)
     /// @param _endDay 조회할 마지막 일 (1-31)
     /// @return 해당 월의 일별 예약 수 배열
-    function getDailyReservationsForMonth(
-        uint32 _yearMonth,
-        uint8 _endDay
-    ) public view returns (uint256[] memory) {
+    function getDailyReservationsForMonth(uint32 _yearMonth, uint8 _endDay)
+        public
+        view
+        returns (uint256[] memory)
+    {
         require(_endDay >= 1 && _endDay <= 31, "Invalid end day");
         uint256[] memory dailyReservations = new uint256[](_endDay);
 
@@ -570,6 +575,64 @@ contract HotelBooking {
     // =============================================================================
     // 함수 : 내부 유틸리티
     // =============================================================================
+    /// @notice 유닉스 타임스탬프를 YYYYMMDD 형식의 날짜로 변환합니다.
+    /// @dev 이 함수는 윤년을 고려합니다.
+    /// @param timestamp 변환할 유닉스 타임스탬프
+    /// @return uint32 YYYYMMDD 형식의 날짜
+    function timestampToDate(uint256 timestamp) public pure returns (uint32) {
+        uint256 secondsPerDay = 24 * 60 * 60;
+        uint256 daysFromEpoch = timestamp / secondsPerDay;
+        uint256 year = 1970;
+        uint256 month = 1;
+        uint256 day = 1;
+
+        // 년도 계산
+        while (true) {
+            /* 윤년 계산:
+            4로 나누어 떨어지고 100으로 나누어 떨어지지 않거나,
+            400으로 나누어 떨어지는 해가 윤년 */
+            bool isLeapYear = (year % 4 == 0 &&
+                (year % 100 != 0 || year % 400 == 0));
+            uint256 daysInYear = isLeapYear ? 366 : 365;
+            if (daysFromEpoch < daysInYear) break;
+            daysFromEpoch -= daysInYear;
+            year++;
+        }
+
+        // 월 계산
+        // 각 월의 일수를 저장하는 배열
+        uint8[12] memory daysInMonth = [
+            31,
+            28,
+            31,
+            30,
+            31,
+            30,
+            31,
+            31,
+            30,
+            31,
+            30,
+            31
+        ];
+
+        // 윤년일 경우 2월을 29일로 조정
+        if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) {
+            daysInMonth[1] = 29;
+        }
+        for (uint256 i = 0; i < 12; i++) {
+            if (daysFromEpoch < daysInMonth[i]) break;
+            daysFromEpoch -= daysInMonth[i];
+            month++;
+        }
+
+        // 일 계산
+        day += daysFromEpoch;
+
+        // YYYYMMDD 형식으로 반환
+        return uint32(year * 10000 + month * 100 + day);
+    }
+
     /// @notice 예약 가격을 계산하는 함수
     /// @param _hotelId 호텔 ID
     /// @param _roomNumber 객실 번호
@@ -595,10 +658,10 @@ contract HotelBooking {
         uint16 _nightCount
     ) internal pure returns (uint32[] memory) {
         require(_checkOutDate > _checkInDate, "Invalid date range");
-        require(
-            _checkOutDate - _checkInDate == _nightCount,
-            "Night count mismatch"
-        );
+        // require(
+        //     _checkOutDate - _checkInDate == _nightCount,
+        //     "Night count mismatch"
+        // );
 
         uint32[] memory dates = new uint32[](_nightCount);
         uint32 currentDate = _checkInDate;
@@ -637,10 +700,11 @@ contract HotelBooking {
     /// @param _year 년도
     /// @param _month 월
     /// @return 해당 월의 일수
-    function _getDaysInMonth(
-        uint32 _year,
-        uint32 _month
-    ) internal pure returns (uint32) {
+    function _getDaysInMonth(uint32 _year, uint32 _month)
+        internal
+        pure
+        returns (uint32)
+    {
         if (_month == 2) {
             return _isLeapYear(_year) ? 29 : 28;
         } else if (_month == 4 || _month == 6 || _month == 9 || _month == 11) {
