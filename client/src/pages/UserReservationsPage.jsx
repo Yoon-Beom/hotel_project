@@ -1,3 +1,4 @@
+// client/src/pages/UserReservationsPage.jsx
 import React, { useEffect, useCallback } from 'react';
 import useReservation from '../hooks/useReservation';
 import useWeb3 from '../hooks/useWeb3';

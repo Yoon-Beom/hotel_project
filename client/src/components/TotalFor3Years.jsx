@@ -1,4 +1,4 @@
-// client\src\components\TotalFor3Years.jsx
+// client/src/components/TotalFor3Years.jsx
 
 import React from 'react';
 import { Bar } from 'react-chartjs-2';

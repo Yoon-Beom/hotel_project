@@ -1,3 +1,4 @@
+// client/src/pages/StatisticsPage.jsx
 import React, { useState, useCallback } from 'react';
 import MonthCalendar from '../components/MonthCalendar';
 import useStatistics from '../hooks/useStatistics';

@@ -1,3 +1,4 @@
+// client/src/components/AddReservation.jsx
 import React, { useState, useEffect } from 'react';
 import useReservation from '../hooks/useReservation';
 import useWeb3 from '../hooks/useWeb3';
