@@ -1,0 +1,54 @@
+.available-hotels {
+    width: 100%;
+    padding: 20px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+  }
+  
+  .available-hotels h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+  }
+  
+  .hotels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .hotel-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    background: #f9f9f9;
+  }
+  
+  .hotel-image {
+    height: 150px;
+    background: #ddd;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-style: italic;
+    color: #888;
+  }
+  
+  .hotel-name {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .hotel-rooms {
+    font-size: 14px;
+  }
+  
+  .room-info {
+    margin-bottom: 5px;
+  }
+  
+  .room-number {
+    font-weight: bold;
+  }
+  
