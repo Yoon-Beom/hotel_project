@@ -167,6 +167,7 @@ export const filterHotelsWithAvailableRooms = async (contract, hotels, checkInDa
 
         for (const hotel of hotels) {
             const rooms = await loadRooms(contract, hotel.id);
+            console.log("rooms" , rooms)
             const availableRooms = await Promise.all(
                 rooms.map(async (room) => {
                     const isAvailable = await checkRoomAvailability(
@@ -176,9 +177,12 @@ export const filterHotelsWithAvailableRooms = async (contract, hotels, checkInDa
                         checkInDate,
                         checkOutDate
                     );
+                    console.log("isAvailable", isAvailable)
                     return isAvailable;
+                  
                 })
-            );
+            ); 
+          
 
             // 하나라도 예약 가능한 객실이 있으면 호텔 추가
             if (availableRooms.some(available => available)) {
@@ -188,7 +192,7 @@ export const filterHotelsWithAvailableRooms = async (contract, hotels, checkInDa
                 });
             }
         }
-
+        console.log("availableHotels" , availableHotels)
         return availableHotels;
     } catch (error) {
         throw new Error(`호텔 필터링 실패: ${error.message}`);

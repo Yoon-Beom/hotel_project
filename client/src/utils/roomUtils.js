@@ -65,16 +65,20 @@ export const getRoomDateStatus = async (contract, hotelId, roomNumber, date) => 
  * @throws {Error} 가용성 확인 실패 시 에러
  */
 export const checkRoomAvailability = async (contract, hotelId, roomNumber, checkInDate, checkOutDate) => {
+    console.log("contract, hotelId, roomNumber, checkInDate, checkOutDate" ,contract, hotelId, roomNumber, checkInDate, checkOutDate)
     if (!isValidDate(checkInDate) || !isValidDate(checkOutDate)) {
         throw new Error('유효하지 않은 날짜입니다.');
     }
     try {
         const dates = getDateArray(checkInDate, checkOutDate);
+        console.log("dates", dates)
         return await contract.methods.isRoomAvailable(hotelId, roomNumber, dates).call();
     } catch (error) {
         throw new Error(`객실 가용성 확인 실패 (호텔 ID: ${hotelId}, 객실 번호: ${roomNumber}, 체크인: ${checkInDate}, 체크아웃: ${checkOutDate}): ${error.message}`);
     }
 };
+console.log("checkRoomAvailability", checkRoomAvailability)
+
 
 // =============================================================================
 // 객실 정보 로딩

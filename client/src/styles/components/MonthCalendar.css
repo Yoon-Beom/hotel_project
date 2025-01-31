@@ -151,6 +151,23 @@
   background: #0047b3;
 }
 
+
+/* MonthCalendar.css에 추가 */
+.react-calendar__navigation__prev2-button,
+.react-calendar__navigation__next2-button {
+  display: none !important;  /* 년도 이동 버튼 숨김 */
+}
+
+.react-calendar__navigation__prev-button,
+.react-calendar__navigation__next-button {
+  display: block !important;  /* 월 이동 버튼 표시 */
+}
+
+
+
+
+
+
 @media screen and (max-width: 768px) {
   .calendar-section {
     min-width: 100%;

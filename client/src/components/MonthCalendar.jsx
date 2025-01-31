@@ -6,31 +6,43 @@ import 'react-calendar/dist/Calendar.css';
 import '../styles/components/MonthCalendar.css';
 import TotalFor3Years from './TotalFor3Years';
 import AvailableHotels from './AvailableHotels';
+import useStatistics from '../hooks/useStatistics';
 
 const MonthCalendar = ({ month }) => {
   const [selectedDates, setSelectedDates] = useState([]); // 체크인/아웃 모드: [체크인날짜, 체크아웃날짜] , 통계 모드: [선택된날짜]
   const [showStats, setShowStats] = useState(false);  // 통계 표시 여부를 관리하는 상태 => true: 통계 표시, false: 통계 숨김
   const [isRangeSelection, setIsRangeSelection] = useState(true); // 날짜 선택 모드를 관리하는 상태 => true: 체크인/아웃 선택 모드, false: 통계 보기 모드
   const [currentDate, setCurrentDate] = useState(new Date(2025, month, 1)); // 현재 표시되는 달을 관리하는 상태
+  const [bookingData, setBookingData] = useState({});
+  const { fetchDailyReservations } = useStatistics();
 
   useEffect(() => {
     setCurrentDate(new Date(2025, month, 1));
   }, [month]);
   
-  const bookingData = useMemo(() => {
-    const data = {};
-    // getDate() 통해 현재 선택한 달의 마지막 날짜를 구한 뒤 daysInMonth에 저장
-    const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-    // 1일부터 선택한 달의 마지막 날짜까지 
-    // 날짜별로 랜덤한 예약 수 지정(1~30까지) //--------------------------------------------------예약 수에 따른 색상 변화는 나중에 추가할 예정
-    for (let day = 1; day <= daysInMonth; day++) {
-      // 현재년도.선택한 월.day 형태의 각각의 날짜마다 1~30까지의 랜덤 수를 지정함.
-      data[`${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${day}`] = Math.floor(Math.random() * 31);
-    }
+  
+  useEffect(() => {
+    const fetchBookingData = async () => {
+      try {
+        const dailyData = await fetchDailyReservations(
+          currentDate.getFullYear(),
+          currentDate.getMonth() + 1
+        );
+        
+        const formattedData = {};
+        Object.entries(dailyData).forEach(([day, count]) => {
+          const dateKey = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${day}`;
+          formattedData[dateKey] = count;
+        });
+        
+        setBookingData(formattedData);
+      } catch (error) {
+        console.error("Error fetching daily reservations:", error);
+      }
+    };
 
-    return data;
-    //currentDate가 변경될 때마다 새로 bookingData 함수 실행
-  }, [currentDate]);
+    fetchBookingData();
+  }, [currentDate, fetchDailyReservations]);
 
   // date는 react-calendar에서 기본으로 제공하는 객체인 듯.
   // calendar에서 날짜 선택하면 날짜 정보가 date를 통해 저장되고 이를 활용할 수 있는 것 같음.
@@ -120,15 +132,14 @@ const MonthCalendar = ({ month }) => {
       </div>
       <div className="calendar-stats-wrapper">
         <div className={`calendar-section ${showStats ? 'with-stats' : ''}`}>
-          <div className="calendar-navigation">
-            <button onClick={() => handleMonthChange(-1)}>이전 달</button>
-            <button onClick={() => handleMonthChange(1)}>다음 달</button>
-          </div>
           <Calendar
             onChange={handleDateChange}
             value={selectedDates}
             selectRange={isRangeSelection}
             activeStartDate={currentDate}
+            onActiveStartDateChange={({ activeStartDate }) => {
+              setCurrentDate(activeStartDate);}}
+            minDetail="month"
             navigationLabel={({ date }) => (
               <div className="navigation-label">
                 <div className="check-date">
@@ -177,7 +188,8 @@ const MonthCalendar = ({ month }) => {
         {isRangeSelection && selectedDates.length === 2 && (
           //체크인/체크아웃 선택 o , 통계보기 모드 x 인 경우 => 선택한 체크인/체크아웃 날짜 데이터 보내줌
           <div className="hotels-section">
-            <AvailableHotels checkIn={selectedDates[0]} checkOut={selectedDates[1]} />
+            <AvailableHotels checkIn={selectedDates[0]} 
+                              checkOut={selectedDates[1]} />
           </div>
         )}
       </div>
