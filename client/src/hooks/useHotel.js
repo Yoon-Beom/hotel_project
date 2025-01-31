@@ -205,6 +205,8 @@ export const useHotel = () => {
      * @returns {Promise<Array>} 예약 가능한 호텔 목록
      */
     const filterAvailableHotels = useCallback(async (checkInDate, checkOutDate) => {
+        console.log("checkInDate, checkInDate from useHotel" , checkInDate, checkInDate)
+        console.log("contract" , contract)
         if (!contract) {
             setErrorState("Contract not initialized");
             return [];

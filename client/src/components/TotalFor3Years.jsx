@@ -1,6 +1,7 @@
 // client/src/components/TotalFor3Years.jsx
 
-import React from 'react';
+// 차트 라이브러리 관련 import
+import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -12,11 +13,16 @@ import {
   Legend
 } from 'chart.js';
 
+// 커스텀 훅과 유틸리티
 import useHotel from '../hooks/useHotel';
+import useStatistics from '../hooks/useStatistics';
+import { formatDate } from '../utils/dateUtils';
 import '../styles/components/TotalFor3Years.css';
 
+// 차트 애니메이션 비활성화
 ChartJS.defaults.animation = false;
 
+// 차트 컴포넌트 등록
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -28,71 +34,64 @@ ChartJS.register(
 
 const TotalFor3Years = ({ selectedDate }) => {
   const { hotels, fetchHotels } = useHotel();
+  const { fetchReservationsByDate } = useStatistics();
+  const [dateData, setDateData] = useState(null);
 
-  React.useEffect(() => {
-    fetchHotels();
-  }, [fetchHotels]);
+  // 호텔 데이터와 예약 데이터 로드
+  useEffect(() => {
+    const loadData = async () => {
+      await fetchHotels();
+      const formattedDate = formatDate(selectedDate);
+      const reservations = await fetchReservationsByDate(formattedDate);
+      setDateData(reservations);
+    };
+    loadData();
+  }, [fetchHotels, fetchReservationsByDate, selectedDate]);
 
-  const generateHotelData = () => {
-    const years = [2022, 2023, 2024, 2025];
-    console.log("등록된 호텔 목록_hotels : " , hotels);
+  // 호텔별 예약 데이터 생성
+  const hotelData = React.useMemo(() => {
+    if (!dateData || !hotels.length) return [];
+    
     return hotels.map(hotel => ({
       name: hotel.name,
-      bookings: years.map(year => ({
-        year,
-        count: Math.floor(Math.random() * (150 - 30 + 1)) + 30
-      }))
+      bookings: dateData[hotel.id] || Array(4).fill(0)
     }));
-  };
-
-  const hotelData = React.useMemo(() => {
-    if (!selectedDate || !hotels.length) return [];
-    return generateHotelData();
-  }, [selectedDate, hotels]);
-  console.log("hotelData : " , hotelData);
+  }, [dateData, hotels]);
 
   if (!selectedDate || !hotels.length) return null;
 
+  // 차트 데이터 구성
   const chartData = {
     labels: hotelData.map(hotel => hotel.name),
     datasets: [
       {
         label: '2022',
-        data: hotelData.map(hotel => 
-          hotel.bookings.find(booking => booking.year === 2022).count
-        ),
+        data: hotelData.map(hotel => hotel.bookings[0]),
         backgroundColor: 'rgba(255, 159, 64, 0.5)',
         borderColor: 'rgb(255, 159, 64)',
       },
       {
         label: '2023',
-        data: hotelData.map(hotel => 
-          hotel.bookings.find(booking => booking.year === 2023).count
-        ),
+        data: hotelData.map(hotel => hotel.bookings[1]),
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
         borderColor: 'rgb(255, 99, 132)',
       },
       {
         label: '2024',
-        data: hotelData.map(hotel => 
-          hotel.bookings.find(booking => booking.year === 2024).count
-        ),
+        data: hotelData.map(hotel => hotel.bookings[2]),
         backgroundColor: 'rgba(53, 162, 235, 0.5)',
         borderColor: 'rgb(53, 162, 235)',
       },
       {
         label: '2025',
-        data: hotelData.map(hotel => 
-          hotel.bookings.find(booking => booking.year === 2025).count
-        ),
+        data: hotelData.map(hotel => hotel.bookings[3]),
         backgroundColor: 'rgba(75, 192, 192, 0.5)',
         borderColor: 'rgb(75, 192, 192)',
       }
     ]
   };
 
-  console.log("chartData.datasets : " , chartData.datasets);
-
+  // 차트 옵션 설정
   const options = {
     devicePixelRatio: 2,
     responsive: true,
@@ -128,6 +127,7 @@ const TotalFor3Years = ({ selectedDate }) => {
       },
       title: {
         display: true,
+        text: `${selectedDate.getMonth() + 1}월 ${selectedDate.getDate()}일 호텔별 연간 예약 현황`,
         padding: {
           top: 20,
           bottom: 30
@@ -178,27 +178,26 @@ const TotalFor3Years = ({ selectedDate }) => {
             weight: 'bold'
           },
           padding: 40
-        },
-        afterFit: (scaleInstance) => {
-          scaleInstance.height = hotelData.length * 120; // y축 높이도 동일하게 설정
         }
       }
     }
   };
 
+  // 컨테이너 스타일
   const containerStyle = {
     height: '95vh',
     width: '98%',
     margin: '20px auto',
     padding: '20px',
-    overflowY: 'auto', // 여기만 스크롤 유지
+    overflowY: 'auto',
     backgroundColor: '#fff',
     borderRadius: '8px',
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
   };
 
+  // 차트 래퍼 스타일
   const chartWrapperStyle = {
-    height: `${hotelData.length * 200}px`, // 각 호텔당 200px의 공간 할당
+    height: `${hotelData.length * 200}px`,
     width: '100%',
     position: 'relative',
     paddingRight: '20px'
@@ -208,20 +207,7 @@ const TotalFor3Years = ({ selectedDate }) => {
     <div className="yearly-stats">
       <div className="chart-container" style={containerStyle}>
         <div className="chart-wrapper" style={chartWrapperStyle}>
-          <Bar 
-            data={chartData} 
-            options={{
-              ...options,
-              plugins: {
-                ...options.plugins,
-                title: {
-                  display: true,
-                  text: `${selectedDate.getMonth() + 1}월 ${selectedDate.getDate()}일 호텔별 연간 예약 현황`,
-                  font: { size: 20, weight: 'bold' }
-                }
-              }
-            }} 
-          />
+          <Bar data={chartData} options={options} />
         </div>
       </div>
       <div className="hotel-stats">
@@ -229,10 +215,10 @@ const TotalFor3Years = ({ selectedDate }) => {
           <div key={index} className="hotel-yearly-stats">
             <h3>{hotel.name}</h3>
             <div className="yearly-bookings">
-              {hotel.bookings.map((booking, idx) => (
+              {[2022, 2023, 2024, 2025].map((year, idx) => (
                 <div key={idx} className="booking-year">
-                  <span>{booking.year}년</span>
-                  <span>총 {booking.count}건</span>
+                  <span>{year}년</span>
+                  <span>총 {hotel.bookings[idx]}건</span>
                 </div>
               ))}
             </div>

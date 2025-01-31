@@ -21,6 +21,7 @@ function App() {
                     <Route path="/hotellist" element={<HotelList />} />
                     <Route path="/manage" element={<HotelManagementPage />} />
                     {/* <Route path="/hotel/:id" element={<HotelDetailsPage />} /> */}
+                    {/*  <Route path="/reservation/:hotelId/:roomId" element={<ReservationPage />} /> */}
                     <Route path="/reservation/:hotelId/:roomId" element={<ReservationPage />} />
                     <Route path="/my-reservations" element={<UserReservationsPage />} />
                     <Route path="/statistics" element={<StatisticsPage />} />
