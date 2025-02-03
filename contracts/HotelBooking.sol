@@ -90,7 +90,7 @@ contract HotelBooking {
 
     /// @notice 호텔 ID -> (객실 번호 -> (날짜 (YYYYMMDD) -> 객실 상태))
     mapping(uint32 => mapping(uint16 => mapping(uint32 => RoomDateStatus)))
-        public roomDateStatus;
+        public roomDateStatusMapping;
 
     // 예약 관련 매핑
     /// @notice 예약 ID -> 예약 정보
@@ -230,7 +230,7 @@ contract HotelBooking {
         uint32 _date
     ) public view returns (bool) {
         return
-            roomDateStatus[_hotelId][_roomNumber][_date] ==
+            roomDateStatusMapping[_hotelId][_roomNumber][_date] ==
             RoomDateStatus.Available;
     }
 
@@ -273,7 +273,7 @@ contract HotelBooking {
         require(_dates.length > 0, "Empty dates array");
 
         for (uint256 i = 0; i < _dates.length; i++) {
-            roomDateStatus[_hotelId][_roomNumber][_dates[i]] = _status;
+            roomDateStatusMapping[_hotelId][_roomNumber][_dates[i]] = _status;
         }
     }
 

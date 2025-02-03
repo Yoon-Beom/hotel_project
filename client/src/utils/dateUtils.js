@@ -170,3 +170,25 @@ export const getDaysInMonth = (year, month) => {
  * @returns {number} 현재 날짜의 YYYYMMDD 형식 숫자
  */
 export const getCurrentDate = () => formatDate(new Date());
+
+// =============================================================================
+// 연도 범위 계산
+// =============================================================================
+
+/**
+ * 현재 연도부터 과거로 지정된 수만큼의 연도 배열을 반환합니다.
+ * @function getRecentYears
+ * @param {number} [currentYear] - 기준 연도 (기본값: 현재 연도)
+ * @param {number} [numYears=4] - 가져올 연도의 수
+ * @returns {number[]} 연도 배열 (내림차순)
+ */
+export const getRecentYears = (currentYear = null, numYears = 4) => {
+    if (currentYear === null) {
+        currentYear = new Date().getFullYear();
+    }
+    
+    return Array.from(
+        { length: numYears }, 
+        (_, index) => currentYear - index
+    );
+};

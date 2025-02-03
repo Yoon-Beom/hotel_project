@@ -2,10 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import useStatistics from '../hooks/useStatistics';
 import { formatDate } from '../utils/dateUtils';
+import MonthlyChart from '../components/MonthlyChart';
+import DailyChart from '../components/DailyChart';
+import HotelChart from '../components/HotelChart';
 
 /**
  * 홈페이지 컴포넌트
- * 다양한 통계 데이터를 표시합니다.
+ * 다양한 통계 데이터를 차트로 표시합니다.
  * @returns {JSX.Element} HomePage 컴포넌트
  */
 const HomePage = () => {
@@ -23,19 +26,25 @@ const HomePage = () => {
 
     useEffect(() => {
         const loadData = async () => {
-            // 월별 예약 통계
-            const monthly = await fetchMonthlyReservations();
-            setMonthlyData(monthly);
-            console.log("monthly: ", monthly);
+            try {
+                // 월별 예약 통계
+                const monthly = await fetchMonthlyReservations();
+                setMonthlyData(monthly);
+                console.log("월별 데이터:", monthly);
 
-            // 2025년 2월의 일별 예약 데이터
-            const daily = await fetchDailyReservations(2025, 2);
-            setDailyData(daily);
+                // 2025년 2월의 일별 예약 데이터
+                const daily = await fetchDailyReservations(2025, 2);
+                setDailyData(daily);
+                console.log("일별 데이터:", daily);
 
-            // 오늘 날짜의 호텔별 예약 데이터
-            const today = formatDate(new Date());
-            const byDate = await fetchReservationsByDate(today);
-            setDateData(byDate);
+                // 오늘 날짜의 호텔별 예약 데이터
+                const today = formatDate(new Date());
+                const byDate = await fetchReservationsByDate(today);
+                setDateData(byDate);
+                console.log("호텔별 데이터:", byDate);
+            } catch (err) {
+                console.error("데이터 로드 중 오류:", err);
+            }
         };
         loadData();
     }, [fetchMonthlyReservations, fetchDailyReservations, fetchReservationsByDate]);
@@ -44,45 +53,33 @@ const HomePage = () => {
     if (error) return <div>에러 발생: {error}</div>;
 
     return (
-        <div>
-            <h1>호텔 예약 시스템 홈페이지</h1>
+        <div style={{ padding: '20px' }}>
+            <h1>호텔 예약 시스템 통계</h1>
 
-            <h2>최근 4년간 월별 예약 통계</h2>
             {monthlyData && (
-                <ul>
-                    {Object.entries(monthlyData).map(([month, yearData]) => (
-                        <li key={month}>
-                            {month}월:
-                            {Object.entries(yearData).map(([year, count]) => (
-                                <span key={year}> {year}년: {count}건 </span>
-                            ))}
-                        </li>
-                    ))}
-                </ul>
+                <MonthlyChart monthlyData={monthlyData} />
             )}
 
-            <h2>2025년 2월 일별 예약 통계</h2>
             {dailyData && (
-                <ul>
-                    {Object.entries(dailyData).map(([day, count]) => (
-                        <li key={day}>{day}일: {count}건</li>
-                    ))}
-                </ul>
+                <DailyChart 
+                    dailyData={dailyData}
+                    year={2025}
+                    month={2}
+                />
             )}
 
-            <h2>오늘 날짜 호텔별 예약 통계</h2>
             {dateData && (
-                <ul>
-                    {Object.entries(dateData).map(([hotelId, yearData]) => (
-                        <li key={hotelId}>
-                            호텔 ID {hotelId}:
-                            {yearData.map((count, index) => (
-                                <span key={index}> {new Date().getFullYear() - 3 + index}년: {count}건 </span>
-                            ))}
-                        </li>
-                    ))}
-                </ul>
+                <HotelChart 
+                    reservationData={dateData}
+                    selectedDate={new Date()}
+                />
             )}
+
+            {/* 테스트용 데이터 출력 */}
+            <div style={{ marginTop: '50px' }}>
+                <h3>원본 데이터 (테스트용)</h3>
+                <pre>{JSON.stringify({ monthlyData, dailyData, dateData }, null, 2)}</pre>
+            </div>
         </div>
     );
 };
