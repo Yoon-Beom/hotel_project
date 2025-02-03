@@ -1,3 +1,4 @@
+// client/src/components/AvailableHotels.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useHotel } from '../hooks/useHotel';
