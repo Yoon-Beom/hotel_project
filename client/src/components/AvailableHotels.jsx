@@ -1,13 +1,14 @@
 // client/src/components/AvailableHotels.jsx
-
 import React, { useEffect, useState } from 'react';
 import { useHotel } from '../hooks/useHotel';
 import { useRoom } from '../hooks/useRoom';
+import { useDate } from '../hooks/useDate';  // useDate 훅 추가
 import '../styles/components/AvailableHotels.css';
 
-const AvailableHotels = ({ checkIn, checkOut }) => { // MonthCalendar로부터 받은 체크인/아웃 날짜
-  const { hotels, fetchHotels, filterAvailableHotels } = useHotel();
-  const { fetchRooms } = useRoom();
+const AvailableHotels = ({ checkIn, checkOut }) => {
+  const { hotels, fetchHotels } = useHotel();
+  const { getAvailableRooms } = useRoom();
+  const { formatToYYYYMMDD } = useDate();  // useDate에서 변환 함수 가져오기
   const [hotelsWithRooms, setHotelsWithRooms] = useState([]);
 
   useEffect(() => {
@@ -15,27 +16,43 @@ const AvailableHotels = ({ checkIn, checkOut }) => { // MonthCalendar로부터 �
   }, [fetchHotels]);
 
   useEffect(() => {
-    const fetchHotelRooms = async () => {
-      if (!hotels || hotels.length === 0) return;
-      const filteredHotels = await filterAvailableHotels(checkIn, checkOut);
-      const hotelRoomsPromises = filteredHotels.map(async (hotel) => {
-        const rooms = await fetchRooms(hotel.id);
-        // 가격 계산 로직 제거하고 객실 번호만 포함
-        const roomsInfo = rooms.map(room => ({
-          roomNumber: room.roomNumber
-        }));
-        return {
-          ...hotel,
-          rooms: roomsInfo
-        };
+    const fetchAvailableRooms = async () => {
+      if (!hotels || hotels.length === 0 || !checkIn || !checkOut) return;
+
+      // useDate 훅의 함수를 사용하여 날짜 변환
+      const checkInDate = formatToYYYYMMDD(checkIn);
+      const checkOutDate = formatToYYYYMMDD(checkOut);
+
+      const hotelRoomsPromises = hotels.map(async (hotel) => {
+        try {
+          const availableRooms = await getAvailableRooms(
+            hotel.id,
+            checkInDate,
+            checkOutDate
+          );
+
+          if (availableRooms && availableRooms.length > 0) {
+            return {
+              ...hotel,
+              rooms: availableRooms.map(room => ({
+                roomNumber: room.roomNumber
+              }))
+            };
+          }
+          return null;
+        } catch (error) {
+          console.error(`Error fetching rooms for hotel ${hotel.id}:`, error);
+          return null;
+        }
       });
 
-      const hotelsWithRoomData = await Promise.all(hotelRoomsPromises);
-      setHotelsWithRooms(hotelsWithRoomData);
+      const results = await Promise.all(hotelRoomsPromises);
+      const hotelsWithAvailableRooms = results.filter(hotel => hotel !== null);
+      setHotelsWithRooms(hotelsWithAvailableRooms);
     };
 
-    fetchHotelRooms();
-  }, [hotels, fetchRooms, checkIn, checkOut, filterAvailableHotels]);
+    fetchAvailableRooms();
+  }, [hotels, checkIn, checkOut, getAvailableRooms, formatToYYYYMMDD]);
 
   const getRandomHotels = () => {
     if (!hotelsWithRooms || hotelsWithRooms.length === 0) return [];
@@ -47,8 +64,7 @@ const AvailableHotels = ({ checkIn, checkOut }) => { // MonthCalendar로부터 �
 
   const randomSelectedHotels = React.useMemo(() => 
     getRandomHotels(), 
-    [hotelsWithRooms, checkIn, checkOut]
-    
+    [hotelsWithRooms]
   );
 
   if (!hotelsWithRooms || hotelsWithRooms.length === 0) return null;
