@@ -12,11 +12,25 @@
   .yearly-stats {
     width: 100%;
     padding: 20px 0;
+    height: 100%;
   }
   
   .yearly-stats canvas {
-    height: 550px !important;
-    margin-bottom: 30px;
+    height: 100% !important;
+    width: 100% !important;
+  }
+
+  .chart-container {
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    height: 80vh;  /* 뷰포트 높이의 80% */
+  }
+
+  .chart-wrapper {
+    height: 100%;
+    width: 100%;
+    padding: 20px;
   }
   
   .hotel-stats {

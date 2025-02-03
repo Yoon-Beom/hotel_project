@@ -43,6 +43,7 @@ const TotalFor3Years = ({ selectedDate }) => {
       await fetchHotels();
       const formattedDate = formatDate(selectedDate);
       const reservations = await fetchReservationsByDate(formattedDate);
+      console.log("reservations: ", reservations);
       setDateData(reservations);
     };
     loadData();
@@ -51,11 +52,11 @@ const TotalFor3Years = ({ selectedDate }) => {
   // 호텔별 예약 데이터 생성
   const hotelData = React.useMemo(() => {
     if (!dateData || !hotels.length) return [];
-    
     return hotels.map(hotel => ({
       name: hotel.name,
       bookings: dateData[hotel.id] || Array(4).fill(0)
     }));
+    
   }, [dateData, hotels]);
 
   if (!selectedDate || !hotels.length) return null;
@@ -162,8 +163,12 @@ const TotalFor3Years = ({ selectedDate }) => {
           font: {
             size: 14,
             weight: 'bold'
-          }
-        }
+          },
+          stepSize: 1 // 눈금 간격을 1로 설정
+        },
+        min: 0,  // 최소값 0으로 설정
+        max: 8, // 최대값 10으로 설정
+        suggestedMax: 8 // 제안된 최대값을 10으로 설정
       },
       y: {
         offset: true,
@@ -178,6 +183,9 @@ const TotalFor3Years = ({ selectedDate }) => {
             weight: 'bold'
           },
           padding: 40
+        },
+        afterFit: (scaleInstance) => {
+          scaleInstance.width = 150;
         }
       }
     }
@@ -185,29 +193,30 @@ const TotalFor3Years = ({ selectedDate }) => {
 
   // 컨테이너 스타일
   const containerStyle = {
-    height: '95vh',
+    height: '80vh',
     width: '98%',
     margin: '20px auto',
     padding: '20px',
-    overflowY: 'auto',
     backgroundColor: '#fff',
     borderRadius: '8px',
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
   };
 
-  // 차트 래퍼 스타일
-  const chartWrapperStyle = {
-    height: `${hotelData.length * 200}px`,
-    width: '100%',
-    position: 'relative',
-    paddingRight: '20px'
-  };
+ // 차트 래퍼 스타일 수정
+ const chartWrapperStyle = {
+  height: '90%',  // 컨테이너의 90%
+  width: '100%',
+  position: 'relative',
+  paddingRight: '20px'
+};
 
   return (
     <div className="yearly-stats">
+      { console.log("hotelData: ", hotelData) }
       <div className="chart-container" style={containerStyle}>
         <div className="chart-wrapper" style={chartWrapperStyle}>
           <Bar data={chartData} options={options} />
+          {console.log("chartData: ", chartData)}
         </div>
       </div>
       <div className="hotel-stats">

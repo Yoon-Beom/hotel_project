@@ -1,20 +1,17 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useHotel } from '../hooks/useHotel';
 import { useRoom } from '../hooks/useRoom';
-import useStatistics from '../hooks/useStatistics';
-import { formatDate, getDateArray } from '../utils/dateUtils';
+import { formatDate } from '../utils/dateUtils';
 import '../styles/components/AvailableHotels.css';
+import { weiToEther } from '../utils/web3Utils';
 
 const AvailableHotels = ({ checkIn, checkOut }) => {
   const navigate = useNavigate();
   const { hotels, fetchHotels, filterAvailableHotels } = useHotel();
-  const { fetchRooms } = useRoom();
-  const { fetchDailyReservations } = useStatistics();
+  const { getAvailableRooms } = useRoom();
   const [hotelsWithRooms, setHotelsWithRooms] = useState([]);
-  const [dailyReservations, setDailyReservations] = useState({});
 
-  // 호텔 목록 가져오기
   useEffect(() => {
     fetchHotels();
   }, [fetchHotels]);
@@ -27,48 +24,18 @@ const AvailableHotels = ({ checkIn, checkOut }) => {
       const checkOutDate = formatDate(checkOut);
   
       try {
-        // 선택된 날짜 범위에 예약 가능한 호텔 필터링
         const filteredHotels = await filterAvailableHotels(checkInDate, checkOutDate);
         
-        // 체크인부터 체크아웃까지의 날짜 배열 생성
-        const dateArray = getDateArray(checkInDate, checkOutDate);
-        
-        // 각 날짜별 예약 데이터 가져오기
-        const reservationsPromises = dateArray.map(date => 
-          fetchDailyReservations(new Date(date).getFullYear(), new Date(date).getMonth() + 1)
-        );
-        const reservationsData = await Promise.all(reservationsPromises);
-        
-        // 날짜별 예약 데이터 병합
-        const mergedReservations = reservationsData.reduce((acc, data, index) => {
-          acc[dateArray[index]] = data;
-          return acc;
-        }, {});
-        
-        setDailyReservations(mergedReservations);
-  
-        // 각 호텔의 객실 정보와 가용성 확인 - 여기를 수정
         const hotelRoomsPromises = filteredHotels.map(async (hotel) => {
-          const rooms = await fetchRooms(hotel.id);
-          const roomsInfo = rooms.filter(room => {
-            // 해당 기간 동안 예약이 있는지 확인
-            return !dateArray.some(date => {
-              const hotelReservations = mergedReservations[date]?.[hotel.id];
-              // hotelReservations가 배열인지 확인 후 includes 호출
-              return Array.isArray(hotelReservations) && hotelReservations.includes(room.roomNumber);
-            });
-          }).map(room => ({
-            roomNumber: room.roomNumber,
-            availability: dateArray.map(date => ({
-              date,
-              isAvailable: true
-            }))
-          }));
+          const availableRooms = await getAvailableRooms(hotel.id, checkInDate, checkOutDate);
           
           // 예약 가능한 객실이 있는 호텔만 반환
-          return roomsInfo.length > 0 ? {
+          return availableRooms.length > 0 ? {
             ...hotel,
-            rooms: roomsInfo
+            rooms: availableRooms.map(room => ({
+              ...room,
+              isAvailable: true // 이미 getAvailableRooms에서 필터링된 객실들이므로 모두 예약 가능
+            }))
           } : null;
         });
   
@@ -82,18 +49,8 @@ const AvailableHotels = ({ checkIn, checkOut }) => {
     };
   
     fetchHotelRooms();
-  }, [hotels, fetchRooms, checkIn, checkOut, filterAvailableHotels, fetchDailyReservations]);
+  }, [hotels, getAvailableRooms, checkIn, checkOut, filterAvailableHotels]);
 
-  // 예약 가능한 호텔 랜덤 선택
-  const randomSelectedHotels = useMemo(() => {
-    if (!hotelsWithRooms || hotelsWithRooms.length === 0) return [];
-    
-    const shuffled = [...hotelsWithRooms].sort(() => 0.5 - Math.random());
-    const count = Math.max(2, Math.floor(Math.random() * (hotelsWithRooms.length + 1)));
-    return shuffled.slice(0, count);
-  }, [hotelsWithRooms]);
-
-  // 객실 선택 시 예약 페이지로 이동
   const handleRoomClick = (hotelId, roomNumber) => {
     navigate(`/reservation/${hotelId}/${roomNumber}`, {
       state: {
@@ -103,35 +60,44 @@ const AvailableHotels = ({ checkIn, checkOut }) => {
     });
   };
 
-  if (!hotelsWithRooms || hotelsWithRooms.length === 0) return null;
+  if (!hotelsWithRooms || hotelsWithRooms.length === 0) {
+    return (
+      <div className="no-hotels-available">
+        <h2>선택하신 날짜에 예약 가능한 호텔이 없습니다.</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="available-hotels">
       <h2>예약 가능한 호텔</h2>
       <div className="hotels-grid">
-        {randomSelectedHotels
-          .filter(hotel => hotel.rooms && hotel.rooms.length > 0)
-          .map((hotel) => (
-            <div key={hotel.id} className="hotel-card">
-              <div className="hotel-image">사진</div>
-              <h3 className="hotel-name">{hotel.name}</h3>
-              <div className="hotel-rooms">
-                {hotel.rooms
-                  .filter(room => room.availability.every(day => day.isAvailable))
-                  .map((room) => (
-                    <div 
-                      key={room.roomNumber} 
-                      className="room-info"
-                      onClick={() => handleRoomClick(hotel.id, room.roomNumber)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <p className="room-number">객실 번호: {room.roomNumber}호</p>
-                      <p className="room-availability">예약 가능 여부: 전 기간 예약 가능</p>
-                    </div>
-                  ))}
-              </div>
+        {hotelsWithRooms.map((hotel) => (
+          <div key={hotel.id} className="hotel-card">
+            <div className="hotel-image">
+              {hotel.imageUrl ? (
+                <img src={hotel.imageUrl} alt={hotel.name} />
+              ) : (
+                <div className="placeholder-image">사진</div>
+              )}
             </div>
-          ))}
+            <h3 className="hotel-name">{hotel.name}</h3>
+            <div className="hotel-rooms">
+              {hotel.rooms.map((room) => (
+                <div 
+                  key={room.roomNumber} 
+                  className="room-info"
+                  onClick={() => handleRoomClick(hotel.id, room.roomNumber)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <p className="room-number">객실 번호: {room.roomNumber}호</p>
+                  <p className="room-price">가격: {weiToEther(room.price)} ETH</p>
+                  <p className="room-status">예약 가능</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

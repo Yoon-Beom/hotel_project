@@ -168,6 +168,7 @@ export const useReservation = () => {
      * @returns {boolean} 예약 날짜의 유효성
      */
     const checkReservationDateValidity = useCallback((checkInDate, checkOutDate) => {
+        console.log("isValidReservationDate" , isValidReservationDate)
         return isValidReservationDate(checkInDate, checkOutDate);
     }, []);
 
