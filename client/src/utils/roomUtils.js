@@ -98,6 +98,10 @@ export const loadRooms = async (contract, hotelId) => {
         const roomNumbers = await contract.methods.getHotelRooms(hotelId).call();
         const rooms = await Promise.all(roomNumbers.map(async roomNumber => {
             const room = await contract.methods.hotelRooms(hotelId, roomNumber).call();
+
+            console.log("room's status" , room.status)
+            console.log("room's status-string" , getRoomStatusString(Number(room.status)))
+            
             return {
                 ...room,
                 roomNumber: Number(roomNumber),
@@ -124,6 +128,9 @@ export const loadRooms = async (contract, hotelId) => {
 export const loadRoomInfo = async (contract, hotelId, roomNumber) => {
     try {
         const room = await contract.methods.hotelRooms(hotelId, roomNumber).call();
+
+        console.log("room" , room);
+        
         return {
             ...room,
             roomNumber: Number(roomNumber),

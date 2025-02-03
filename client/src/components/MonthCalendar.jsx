@@ -34,8 +34,10 @@ const MonthCalendar = ({ month }) => {
           const dateKey = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${day}`;
           formattedData[dateKey] = count;
         });
+        console.log("formattedData: ", formattedData);
         
         setBookingData(formattedData);
+        console.log("bookingData: ", bookingData);
       } catch (error) {
         console.error("Error fetching daily reservations:", error);
       }
