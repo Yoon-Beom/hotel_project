@@ -1,0 +1,74 @@
+/* 예약 목록 전체 컨테이너 */
+.reservation-list {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 개별 예약 아이템 카드 스타일 */
+.reservation-item {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 예약 페이지 제목 */
+.reservation-list h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* 정보 섹션 컨테이너 */
+.info-section {
+    background-color: #eef1f3;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+/* 예약 정보 테이블 스타일 */
+.reservation-info-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.reservation-info-table td {
+    padding: 10px;
+}
+
+.reservation-info-table .label {
+    width: 120px;
+    color: #666;
+}
+
+.reservation-info-table .value {
+    color: #333;
+    font-weight: 500;
+}
+
+/* 예약 취소 버튼 */
+.cancel-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #4d87df;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background-color 0.2s;
+}
+
+.cancel-button:hover {
+    background-color: #003d96;
+}
+
+/* 로딩 및 에러 메시지 */
+.loading, .error, .no-reservations {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}

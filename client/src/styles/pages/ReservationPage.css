@@ -1,0 +1,230 @@
+.reservation-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f7fa; /* 전체 페이지 배경색 추가 */
+}
+
+.hotel-info {
+    background-color: #f8f9fa;  /* 예약 정보와 동일한 배경색 적용 */
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.hotel-info h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.hotel-info h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.hotel-info p {
+    margin: 10px 0;
+    color: #666;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+}
+
+.reservation-details {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.check-dates {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.date-box {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.date-box label {
+    display: block;
+    color: #666;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.date-box .time {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+}
+
+.price-info {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.total-price {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 10px;
+}
+
+.notice-box {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+.notice-box h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.notice-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notice-box li {
+    margin: 5px 0;
+    color: #666;
+    font-size: 14px;
+    padding-left: 15px;
+    position: relative;
+}
+
+.notice-box li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #999;
+}
+
+/* 객실 정보 섹션 스타일 */
+.room-details-box {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.room-image-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.room-image-placeholder {
+    width: 100%;
+    height: 300px;
+    background-color: #eef0f3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 16px;
+    border: 1px solid #e1e4e8;
+    border-radius: 4px;
+}
+
+.image-navigation {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+.nav-button {
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-button:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.room-description {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.ipfs-notice {
+    color: #666;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.hotel-info, .notice-box, .room-details-box, .add-reservation-container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* 구분선 추가 */
+.hotel-info, .notice-box, .room-details-box {
+    border: 1px solid #e1e4e8;
+}
+
+.room-info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.room-info-table td {
+    padding: 10px 0;
+    vertical-align: middle;
+}
+
+
+.room-info-table .label {
+    width: 100px;
+    color: #333;
+}
+
+.room-info-table .value {
+    color: #333;
+    font-weight: 500;
+}
+
+.bookinglist-section {
+    background-color: #eef1f3;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}

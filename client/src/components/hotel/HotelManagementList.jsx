@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import useHotel from '../../hooks/useHotel';
 import AddRoom from '../room/AddRoom';
 import RoomList from '../room/RoomList';
-// import '../styles/components/HotelManagementList.css';
+import '../../styles/components/HotelManagementList.css';
 
 /**
  * 사용자의 호텔 관리 목록을 표시하는 컴포넌트
@@ -49,14 +49,23 @@ const HotelManagementList = () => {
             ) : (
                 userHotels.map(hotel => (
                     <div key={hotel.id} className="hotel-item">
-                        <h3>{hotel.name}</h3>
-                        <p>IPFS 해시: {hotel.ipfsHash}</p>
-                        <p>활성 상태: {hotel.isActive ? '활성' : '비활성'}</p>
-                        
-                        <AddRoom hotelId={hotel.id} onRoomAdded={handleRoomAdded} />
-                        
-                        <RoomList hotelId={hotel.id} />
-                    </div>
+                    <h3>{hotel.name}</h3>
+                <table className="hotel-info-table">
+                    <tbody>
+                        <tr>
+                            <td className="label">IPFS 해시</td>
+                            <td className="value">{hotel.ipfsHash}</td>
+                        </tr>
+                        <tr>
+                            <td className="label">상태</td>
+                            <td className="value">{hotel.isActive ? '활성' : '비활성'}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <AddRoom hotelId={hotel.id} onRoomAdded={handleRoomAdded} />
+                <RoomList hotelId={hotel.id} />
+            </div>
                 ))
             )}
         </div>
