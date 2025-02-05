@@ -1,8 +1,8 @@
 // client/src/components/HotelManagementList.jsx
 import React, { useEffect, useState, useCallback } from 'react';
-import useHotel from '../hooks/useHotel';
-import AddRoom from './AddRoom';
-import RoomList from './RoomList';
+import useHotel from '../../hooks/useHotel';
+import AddRoom from '../room/AddRoom';
+import RoomList from '../room/RoomList';
 // import '../styles/components/HotelManagementList.css';
 
 /**

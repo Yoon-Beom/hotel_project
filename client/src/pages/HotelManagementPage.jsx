@@ -1,8 +1,8 @@
 // client/src/pages/HotelManagementPage.jsx
 import React, { useEffect, useState, useCallback } from 'react';
 import useHotel from '../hooks/useHotel';
-import HotelManagementList from '../components/HotelManagementList';
-import AddHotel from '../components/AddHotel';
+import HotelManagementList from '../components/hotel/HotelManagementList';
+import AddHotel from '../components/hotel/AddHotel';
 // import '../styles/pages/HotelManagementPage.css';
 
 /**

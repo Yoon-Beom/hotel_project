@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import HomePage from './pages/HomePage';
 import HotelManagementPage from './pages/HotelManagementPage';
-import HotelList from './components/HotelList';
+import HotelList from './components/hotel/HotelList';
 // import HotelDetailsPage from './pages/HotelDetailsPage';
 import ReservationPage from './pages/ReservationPage';
 // import UserReservationsPage from './pages/UserReservationsPage';

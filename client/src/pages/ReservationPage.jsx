@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useHotel from '../hooks/useHotel';
 import useRoom from '../hooks/useRoom';
-import AddReservation from '../components/AddReservation';
+import AddReservation from '../components/reservation/AddReservation';
 import { weiToEther } from '../utils/web3Utils';
 // import '../styles/pages/ReservationPage.css';
 

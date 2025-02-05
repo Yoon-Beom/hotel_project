@@ -10,9 +10,9 @@ import {
     Tooltip,
     Legend
 } from 'chart.js';
-import useChart from '../hooks/useChart';
-import useHotel from '../hooks/useHotel';
-import { getRecentYears } from '../utils/dateUtils';  // parseDate 추가
+import useChart from '../../hooks/useChart';
+import useHotel from '../../hooks/useHotel';
+import { getRecentYears } from '../../utils/dateUtils';  // parseDate 추가
 
 ChartJS.register(
     CategoryScale,
@@ -107,6 +107,7 @@ const HotelChart = ({ reservationData, selectedDate }) => {
 
     return (
         <div style={{ marginBottom: '40px', height: '400px' }}>
+            { console.log("HotelChart 실행") }
             <h2>호텔별 예약 통계</h2>
             <Bar data={chartData} options={options} />
         </div>

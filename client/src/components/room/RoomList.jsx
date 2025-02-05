@@ -1,7 +1,7 @@
 // client/src/components/RoomList.jsx
 import React, { useEffect, useState } from 'react';
-import useRoom from '../hooks/useRoom';
-import useWeb3 from '../hooks/useWeb3';
+import useRoom from '../../hooks/useRoom';
+import useWeb3 from '../../hooks/useWeb3';
 // import '../styles/components/RoomList.css';
 
 /**

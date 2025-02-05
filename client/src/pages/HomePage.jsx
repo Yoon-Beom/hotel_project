@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import useStatistics from '../hooks/useStatistics';
 import { formatDate } from '../utils/dateUtils';
-import MonthlyChart from '../components/MonthlyChart';
-import DailyChart from '../components/DailyChart';
-import HotelChart from '../components/HotelChart';
+import MonthlyChart from '../components/charts/MonthlyChart';
+import DailyChart from '../components/charts/DailyChart';
+import HotelChart from '../components/charts/HotelChart';
 
 /**
  * 홈페이지 컴포넌트

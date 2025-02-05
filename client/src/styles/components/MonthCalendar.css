@@ -1,3 +1,5 @@
+/* client/src/styles/components/layout/MonthCalendar.css */
+
 .calendar-container {
   padding: 20px;
   width: 100%;
@@ -29,6 +31,7 @@
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 10px;
+  --day-start: sunday;  /* 일요일부터 시작 */
 }
 
 .react-calendar__navigation {
@@ -47,12 +50,55 @@
   text-align: center;
   font-weight: bold;
   font-size: 18px !important;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  margin-bottom: 10px;
 }
 
 .react-calendar__month-view__weekdays__weekday {
   padding: 10px;
 }
 
+/* 요일 텍스트 스타일링 */
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none !important;
+  font-size: 16px;
+  color: transparent;
+  position: relative;
+}
+
+/* 요일 텍스트 변경 */
+.react-calendar__month-view__weekdays__weekday:nth-child(1) abbr::before {
+  content: '일';
+  color: #ff4d4d !important;
+}
+.react-calendar__month-view__weekdays__weekday:nth-child(2) abbr::before {
+  content: '월';
+  color: #000000 !important;
+}
+.react-calendar__month-view__weekdays__weekday:nth-child(3) abbr::before {
+  content: '화';
+  color: #000000 !important;
+}
+.react-calendar__month-view__weekdays__weekday:nth-child(4) abbr::before {
+  content: '수';
+  color: #000000 !important;
+}
+.react-calendar__month-view__weekdays__weekday:nth-child(5) abbr::before {
+  content: '목';
+  color: #000000 !important;
+}
+.react-calendar__month-view__weekdays__weekday:nth-child(6) abbr::before {
+  content: '금';
+  color: #000000 !important;
+}
+.react-calendar__month-view__weekdays__weekday:nth-child(7) abbr::before {
+  content: '토';
+  color: #1a75ff !important;
+}
+
+
+/* 날짜 타일 스타일링 */
 .react-calendar__tile {
   position: relative;
   height: 100px;
@@ -64,9 +110,19 @@
   font-size: 20px !important;
 }
 
+/* 토요일 날짜 색상 */
+.react-calendar__month-view__days__day--weekend:nth-child(7n) {
+  color: #1a75ff !important;
+}
+
+/* 일요일 날짜 색상 */
+.react-calendar__month-view__days__day--weekend:nth-child(7n+1) {
+  color: #ff4d4d !important;
+}
+
 .react-calendar__tile--now {
   background: #f89b00 !important;
-  color: inherit !important; /* 기본 텍스트 색상 유지 */
+  color: inherit !important;
   font-weight: bold !important;
 }
 
@@ -151,23 +207,18 @@
   background: #0047b3;
 }
 
-
-/* MonthCalendar.css에 추가 */
+/* 년도 이동 버튼 숨김, 월 이동 버튼 표시 */
 .react-calendar__navigation__prev2-button,
 .react-calendar__navigation__next2-button {
-  display: none !important;  /* 년도 이동 버튼 숨김 */
+  display: none !important;
 }
 
 .react-calendar__navigation__prev-button,
 .react-calendar__navigation__next-button {
-  display: block !important;  /* 월 이동 버튼 표시 */
+  display: block !important;
 }
 
-
-
-
-
-
+/* 반응형 스타일링 */
 @media screen and (max-width: 768px) {
   .calendar-section {
     min-width: 100%;

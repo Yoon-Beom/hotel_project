@@ -10,7 +10,7 @@ import {
     Tooltip,
     Legend
 } from 'chart.js';
-import useChart from '../hooks/useChart';
+import useChart from '../../hooks/useChart';
 
 ChartJS.register(
     CategoryScale,

@@ -25,7 +25,7 @@ if '%errorlevel%' NEQ '0' (
 REM CMD 창 4개 열기
 REM Truffle 프로젝트 디렉토리로 이동하여 migration 실행 및 파일 복사
 start cmd.exe /k "cd /d %~dp0 && remixd -s . --remix-ide https://remix.ethereum.org"
-start cmd.exe /k "cd /d %~dp0 && truffle migrate && xcopy /y build\contracts\HotelBooking.json client\src\contracts\"
+rem start cmd.exe /k "cd /d %~dp0 && truffle migrate && xcopy /y build\contracts\HotelBooking.json client\src\contracts\"
 start cmd.exe /k "cd /d %~dp0\client && yarn start"
 start cmd.exe /k "cd /d %~dp0\client"
 

@@ -10,8 +10,8 @@ import {
     Tooltip,
     Legend
 } from 'chart.js';
-import { getRecentYears } from '../utils/dateUtils';
-import useChart from '../hooks/useChart';
+import { getRecentYears } from '../../utils/dateUtils';
+import useChart from '../../hooks/useChart';
 
 ChartJS.register(
     CategoryScale,
