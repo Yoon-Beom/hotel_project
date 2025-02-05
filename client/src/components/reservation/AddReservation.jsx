@@ -5,6 +5,7 @@ import useWeb3 from '../../hooks/useWeb3';
 import { formatDate, convertToYYYYMMDD } from '../../utils/dateUtils';
 import { weiToEther, etherToWei } from '../../utils/web3Utils';
 import { calculateReservationDuration, isValidReservationDate } from '../../utils/reservationUtils';
+import '../../styles/components/AddReservation.css'
 
 
 /**
@@ -75,25 +76,47 @@ const AddReservation = ({ hotelId, roomId, room, initialCheckIn, initialCheckOut
         <div className="add-reservation-container">
             <h2>예약 정보</h2>
             <div className="reservation-info">
-            <p>체크인 날짜 : {initialCheckIn && 
-                `${('' + initialCheckIn).substring(0, 4)}년 ${('' + initialCheckIn).substring(4, 6)}월 ${('' + initialCheckIn).substring(6, 8)}일`}
-            </p>
-            <p>체크아웃 날짜 : {initialCheckOut && 
-                `${('' + initialCheckOut).substring(0, 4)}년 ${('' + initialCheckOut).substring(4, 6)}월 ${('' + initialCheckOut).substring(6, 8)}일`}
-            </p>
-            <p className="date-range">
-                { `숙박일 : ${nights}박${nights + 1}일`}
-            </p>
-            <p>총 결제 금액: {totalPrice} ETH</p>
+                <div className="booking-section">
+                    <table className="booking-table">
+                        <tbody>
+                            <tr>
+                                <td className="label">체크인</td>
+                                <td className="value">
+                                    {initialCheckIn && 
+                                        `${('' + initialCheckIn).substring(0, 4)}년 ${('' + initialCheckIn).substring(4, 6)}월 ${('' + initialCheckIn).substring(6, 8)}일`}
+                                    <span className="time-info">(15:00까지 입실)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="label">체크아웃</td>
+                                <td className="value">
+                                    {initialCheckOut && 
+                                        `${('' + initialCheckOut).substring(0, 4)}년 ${('' + initialCheckOut).substring(4, 6)}월 ${('' + initialCheckOut).substring(6, 8)}일`}
+                                    <span className="time-info">1(1:00까지 퇴실)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="label">숙박일</td>
+                                <td className="value">{`${nights}박 ${nights + 1}일`}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+    
+                <div className="price-info">
+                    <span>총 결제 금액</span>
+                    <span className="amount">{totalPrice} ETH</span>
+                </div>
+    
+                <button
+                    onClick={handleSubmit}
+                    disabled={!initialCheckIn || !initialCheckOut || isLoading || !account}
+                    className="submit-button"
+                >
+                    {isLoading ? '예약 처리 중...' : '예약하기'}
+                </button>
+                {error && <p className="error-message">Error: {error}</p>}
             </div>
-            <button
-                onClick={handleSubmit}
-                disabled={!initialCheckIn || !initialCheckOut || isLoading || !account}
-                className="submit-button"
-            >
-                {isLoading ? '예약 처리 중...' : '예약하기'}
-            </button>
-            {error && <p className="error-message">Error: {error}</p>}
         </div>
     );
 };
