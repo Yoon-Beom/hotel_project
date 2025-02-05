@@ -11,18 +11,18 @@ import { useBookingData } from '../../hooks/useBookingData';
 import { getTileClassName } from '../../utils/calendarUtils';
 import useStatistics from '../../hooks/useStatistics';
 
-const MonthCalendar = ({ 
-    year, 
-    month, 
-    onMonthChange, 
-    onYearChange 
+const MonthCalendar = ({
+    year,
+    month,
+    onMonthChange,
+    onYearChange
 }) => {
     const {
         selectedDates,
         currentDate,
         setCurrentDate,
         handleDateChange,
-        isDateInPast
+        displayMode
     } = useCalendar();
 
     const { fetchReservationsByDate } = useStatistics();
@@ -45,7 +45,7 @@ const MonthCalendar = ({
     // 단일 날짜 선택시 호텔 차트 데이터 로드
     useEffect(() => {
         const loadHotelData = async () => {
-            if (selectedDates.length === 1) {
+            if (displayMode === 'single') {
                 try {
                     const formatDate = date => {
                         const year = date.getFullYear();
@@ -65,7 +65,7 @@ const MonthCalendar = ({
         };
 
         loadHotelData();
-    }, [selectedDates, fetchReservationsByDate]);
+    }, [selectedDates, fetchReservationsByDate, displayMode]);
 
     return (
         <div className="calendar-container">
@@ -74,8 +74,8 @@ const MonthCalendar = ({
                     <Calendar
                         onChange={handleDateChange}
                         value={selectedDates}
-                        selectRange={!isDateInPast(selectedDates[0])}
-                        allowPartialRange={true}  
+                        selectRange={true}
+                        allowPartialRange={true}
                         calendarType="gregory"
                         activeStartDate={currentDate}
                         onActiveStartDateChange={handleActiveStartDateChange}
@@ -94,23 +94,23 @@ const MonthCalendar = ({
                         tileClassName={({ date }) => getTileClassName(date, selectedDates)}
                     />
                 </div>
-                
-                {selectedDates[1] != null ? (
+                {console.log("dateData: ", dateData)}
+                {displayMode === 'single' && dateData && (
+                    <div className="chart-section">
+                        <HotelChart
+                            reservationData={dateData}
+                            selectedDate={selectedDates[0]}
+                        />
+                    </div>
+                )}
+
+                {displayMode === 'range' && (
                     <div className="hotels-section">
                         <AvailableHotels
                             checkIn={selectedDates[0]}
                             checkOut={selectedDates[1]}
                         />
                     </div>
-                ) : (
-                    selectedDates.length === 1 && dateData && (
-                        <div className="chart-section">
-                            <HotelChart
-                                reservationData={dateData}
-                                selectedDate={selectedDates[0]}
-                            />
-                        </div>
-                    )
                 )}
             </div>
         </div>

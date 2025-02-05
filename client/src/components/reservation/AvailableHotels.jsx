@@ -20,12 +20,9 @@ const AvailableHotels = ({ checkIn, checkOut }) => {
   useEffect(() => {
     const fetchHotelRooms = async () => {
       if (!hotels || !checkIn || !checkOut) return;
-
-      console.log("props from mc checkIn, checkOut", checkIn, checkOut)
       
       const checkInDate = formatDate(checkIn);
       const checkOutDate = formatDate(checkOut);
-      console.log("state from available25 checkInDate, checkInDate" , checkInDate, checkInDate)
       
       try {
         const filteredHotels = await filterAvailableHotels(checkInDate, checkOutDate);

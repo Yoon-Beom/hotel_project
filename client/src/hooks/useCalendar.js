@@ -15,6 +15,7 @@ export const useCalendar = () => {
     const initialDate = useMemo(() => normalizeCalendarDate(new Date()), []);
     const [selectedDates, setSelectedDates] = useState([initialDate, null]);
     const [currentDate, setCurrentDate] = useState(initialDate);
+    const [displayMode, setDisplayMode] = useState('none');
 
     /**
      * 날짜가 과거인지 확인하는 함수
@@ -33,43 +34,51 @@ export const useCalendar = () => {
      * @param {Date} selectDate - 선택된 날짜
      */
     const handleDateChange = useCallback((selectDate) => {
-        const [start, end] = selectDate;
-        const normalizedStart = normalizeCalendarDate(start);
-        const normalizedEnd = end ? normalizeCalendarDate(end) : null;
-        console.log("selectDate[0]: ", selectDate[0]);
-        console.log("selectDate[1]: ", selectDate[1]);
-        console.log("normalizedStart: ", normalizedStart);
-        console.log("normalizedEnd: ", normalizedEnd);
+        let start, end;
 
-        // 시작 상태 (둘 다 null)
-        if (!selectedDates[0] && !selectedDates[1]) {
-            setSelectedDates([initialDate, null]);
-            console.log("=================================================");
-            return;
+        if (Array.isArray(selectDate)) {
+            [start, end] = selectDate;
+        } else {
+            start = selectDate;
+            end = null;
         }
 
-        // 과거 날짜 선택
-        if (normalizedStart < initialDate) {
-            console.log("과거 날짜 선택");
+        const normalizedStart = start ? normalizeCalendarDate(start) : null;
+        const normalizedEnd = end ? normalizeCalendarDate(end) : null;
+
+        console.log("▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼");
+        console.log("selectDate[0]: ", selectDate[0]);
+        console.log("selectDate[1]: ", selectDate[1]);
+        console.log("▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲");
+
+        // 단일 선택
+        if (end == null) {
             setSelectedDates([normalizedStart, null]);
-            console.log("=================================================");
+            setDisplayMode('none');
             return;
         }
 
         // 체크인 날짜와 동일한 날짜 선택
-        if (normalizedEnd !== null && (normalizedStart.getTime() === normalizedEnd.getTime())
-        ) {
-            console.log("체크인 날짜와 동일한 날짜 선택");
+        if (normalizedStart.getTime() === normalizedEnd.getTime()) {
+            console.log("HotelChart 출력");
             setSelectedDates([normalizedStart, null]);
-            console.log("=================================================");
+            setDisplayMode('single');
             return;
         }
 
-        // 유효하지 않은 종료 날짜 체크 (1970년도 체크)
-        if (normalizedEnd === null || normalizedEnd.getFullYear() < 2000) {
-            console.log("유효하지 않은 종료 날짜 체크 (1970년도 체크)");
+        // A < 현재, 현재<= B
+        if (normalizedStart < initialDate && initialDate <= normalizedEnd) {
+            console.log("A < 현재, 현재<= B");
             setSelectedDates([normalizedStart, null]);
-            console.log("=================================================");
+            setDisplayMode('none');
+            return;
+        }
+
+        // A < B, B <= 현재
+        if (normalizedStart < initialDate && normalizedEnd < initialDate) {
+            console.log("A < B, B <= 현재");
+            setSelectedDates([normalizedStart, null]);
+            setDisplayMode('none');
             return;
         }
 
@@ -77,12 +86,12 @@ export const useCalendar = () => {
         const daysDiff = calculateDaysDiff(normalizedEnd, normalizedStart);
         if (daysDiff > 30) {
             alert('최대 30일까지만 예약 가능합니다.');
-            console.log("=================================================");
+            setDisplayMode('none');
             return;
         }
 
         setSelectedDates([normalizedStart, normalizedEnd]);
-        console.log("=================================================");
+        setDisplayMode('range');
         return;
     }, [selectedDates, initialDate]);
 
@@ -92,6 +101,7 @@ export const useCalendar = () => {
         currentDate,
         setCurrentDate,
         handleDateChange,
-        isDateInPast
+        isDateInPast,
+        displayMode
     };
 };

@@ -19,13 +19,11 @@ export const initWeb3 = async () => {
             // 네트워크 ID 가져오기
             const networkId = await web3.eth.net.getId();
             const deployedNetwork = HotelBookingContract.networks[networkId];
-            console.log("networkId: ", networkId);
             // 현재 네트워크에 컨트랙트가 배포되어 있는지 확인
             if (!deployedNetwork) {
                 return { error: "현재 네트워크에 컨트랙트가 배포되어 있지 않습니다." };
             }
 
-            console.log("deployedNetwork.address: ", deployedNetwork.address);
             // 컨트랙트 인스턴스 생성
             const contract = new web3.eth.Contract(
                 HotelBookingContract.abi,
