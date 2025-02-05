@@ -1,0 +1,206 @@
+.add-reservation-container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e1e4e8;
+}
+
+.add-reservation-container h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.booking-section {
+    background-color: #eef1f3;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.booking-section h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #333;
+}
+.time-info {
+    color: black;
+    margin-left: 10px;
+    display: inline-block;
+}
+
+.booking-section p {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    color: #333;
+}
+
+.date-range {
+    padding: 1px 0;  /* padding 상하만 유지 */
+    margin: 15px 0;
+    color: #333;      /* 텍스트 색상 추가 */
+}
+
+.booking-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.booking-table td {
+    padding: 10px 0;
+    vertical-align: middle;
+}
+
+.booking-table .label {
+    width: 80px;
+    color: #333;
+}
+
+.booking-table .value {
+    color: #333;
+}
+
+.price-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-top: 1px solid #eee;
+    margin-top: 20px;
+}
+
+.price-info span:first-child {
+    font-size: 16px;
+    color: #333;
+}
+
+.price-info .amount {
+    color: #0051c7;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.hotel-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.hotel-header h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.room-info {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.room-info span {
+    color: #333;
+}
+
+.room-info .price {
+    font-weight: 500;
+}
+
+.notice-section {
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    margin: 10px 0;
+}
+
+.notice-section p {
+    color: #666;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.reservation-info {
+    padding: 20px;
+}
+
+.date-section {
+    margin-bottom: 20px;
+}
+
+.date-section h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.date-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+
+.date-label {
+    color: #333;
+}
+
+.date-value {
+    color: #666;
+}
+
+.time-info {
+    color: #666;
+    font-size: 14px;
+}
+
+.total-price {
+    padding: 20px 0;
+    border-top: 1px solid #eee;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total-price .label {
+    font-weight: 500;
+}
+
+.total-price .amount {
+    color: #0051c7;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.submit-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #0051c7;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.2s;
+}
+.submit-button:hover {
+    background-color: #003d96;
+}
+
+.submit-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: #ff4444;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #ffe6e6;
+    border-radius: 4px;
+}
+
+

@@ -5,7 +5,7 @@ import useHotel from '../hooks/useHotel';
 import useRoom from '../hooks/useRoom';
 import AddReservation from '../components/reservation/AddReservation';
 import { weiToEther } from '../utils/web3Utils';
-// import '../styles/pages/ReservationPage.css';
+import '../styles/pages/ReservationPage.css';
 
 /**
  * 예약 페이지 컴포넌트
@@ -111,15 +111,49 @@ const ReservationPage = () => {
 
     return (
         <div className="reservation-page">
-            <h1>예약하기</h1>
-            
             <div className="hotel-info">
+                <h1>예약페이지</h1>
                 <h2>{hotel.name}</h2>
-                <p>객실 번호: {room.roomNumber}</p>
-                <p>1박 가격: {weiToEther(room.price)} ETH</p>
-              
+                <div className="bookinglist-section">
+                <table className="room-info-table">
+                <tbody>
+                    <tr>
+                        <td className="label">객실 번호</td>
+                        <td className="value">{room.roomNumber}호</td>
+                    </tr>
+                    <tr>
+                        <td className="label">1박 가격</td>
+                        <td className="value">{weiToEther(room.price)} ETH</td>
+                    </tr>
+                </tbody>
+            </table>
             </div>
-
+            </div>
+    
+            <div className="notice-box">
+                <h3>예약 안내</h3>
+                <ul>
+                    <li>예약일시 기준 체크인 시작 이전일 경우 무료 취소가 가능합니다.</li>
+                    <li>숙소 정책에 따라 일부 요청은 불가능할 수 있습니다.</li>
+                </ul>
+            </div>
+    
+            {/* 새로 추가된 객실 정보 섹션 */}
+            <div className="room-details-box">
+                <div className="room-image-container">
+                    <div className="room-image-placeholder">
+                        객실 이미지 준비중
+                    </div>
+                    <div className="image-navigation">
+                        <button className="nav-button">◀</button>
+                        <button className="nav-button">▶</button>
+                    </div>
+                </div>
+                <div className="room-description">
+                    <p className="ipfs-notice">IPFS 저장된 객실 정보 가져올 예정</p>
+                </div>
+            </div>
+    
             <AddReservation
                 hotelId={Number(hotelId)}
                 roomId={Number(roomId)}
