@@ -1,22 +1,32 @@
-// File Structure Diagram Last Modify 250121 1030
+// File Structure Diagram Last Modify 250205 1100
 hotel_project/
 |-- client/
-|   |-- public/
 |   |-- src/
 |       |-- components/
+|       |   |-- calendar/
+|       |   |   |-- CalendarHeader.jsx
+|       |   |   `-- MonthCalendar.jsx
+|       |   |-- charts/
+|       |   |   |-- DailyChart.jsx
+|       |   |   |-- HotelChart.jsx
+|       |   |   |-- MonthlyChart.jsx
+|       |   |   `-- TotalFor3Years.jsx
+|       |   |-- hotel/
+|       |   |   |-- AddHotel.jsx
+|       |   |   |-- HotelCard.jsx
+|       |   |   |-- HotelList.jsx
+|       |   |   `-- HotelManagementList.jsx
 |       |   |-- layout/
 |       |   |   |-- Footer.jsx
 |       |   |   |-- Layout.jsx
 |       |   |   `-- Navbar.jsx
-|       |   |-- AddHotel.jsx
-|       |   |-- AddRoom.jsx
-|       |   |-- HotelCard.jsx
-|       |   |-- HotelList.jsx
-|       |   |-- HotelManagementList.jsx
-|       |   |-- ReservationForm.jsx
-|       |   |-- ReservationList.jsx
-|       |   |-- RoomList.jsx
-|       |   `-- StatisticsChart.jsx
+|       |   |-- reservation/
+|       |   |   |-- AddReservation.jsx
+|       |   |   |-- AvailableHotels.jsx
+|       |   |   `-- ReservationList.jsx
+|       |   `-- room/
+|       |       |-- AddRoom.jsx
+|       |       `-- RoomList.jsx
 |       |
 |       |-- contexts/
 |       |   `-- Web3Context.js
@@ -25,15 +35,18 @@ hotel_project/
 |       |   `-- HotelBooking.json
 |       |
 |       |-- hooks/
+|       |   |-- useBookingData.js
+|       |   |-- useCalendar.js
+|       |   |-- useChart.js
 |       |   |-- useHotel.js
 |       |   |-- useIPFS.js
 |       |   |-- useReservation.js
 |       |   |-- useRoom.js
+|       |   |-- useStatistics.js
 |       |   `-- useWeb3.js
 |       |
 |       |-- pages/
 |       |   |-- HomePage.jsx
-|       |   |-- HotelDetailsPage.jsx
 |       |   |-- HotelManagementPage.jsx
 |       |   |-- ReservationPage.jsx
 |       |   |-- StatisticsPage.jsx
@@ -42,44 +55,52 @@ hotel_project/
 |       |-- styles/
 |       |   |-- components/
 |       |   |   |-- layout/
-|       |   |   |   |-- Footer.css
-|       |   |   |   |-- Layout.css
-|       |   |   |   `-- Navbar.css
-|       |   |   |-- AddHotel.css
-|       |   |   |-- AddRoom.css
-|       |   |   |-- global.css
-|       |   |   |-- HotelCard.css
-|       |   |   |-- HotelList.css
-|       |   |   |-- HotelManagementList.css
-|       |   |   |-- ReservationForm.css
-|       |   |   |-- ReservationList.css
-|       |   |   |-- RoomList.css
-|       |   |   |-- variables.css
-|       |   |   `-- StatisticsChart.css
-|       |   |
-|       |   `--- pages/
-|       |       |-- HomePage.css
-|       |       |-- HotelDetailsPage.css
-|       |       |-- HotelManagementPage.css
-|       |       |-- ReservationPage.css
-|       |       |-- StatisticsPage.css
-|       |       `-- UserReservationsPage.css
-|       |    
+|       |   |   |   |-- AvailableHotels.css
+|       |   |   |   |-- MonthCalendar.css
+|       |   |   |   `-- TotalFor3Years.css
+|       |   |   `-- global.css
+|       |   |-- pages/
+|       |   |-- App.css
+|       |   `-- index.css
 |       |
 |       |-- utils/
+|       |   |-- calendarUtils.js
+|       |   |-- chartUtils.js
 |       |   |-- dateUtils.js
-|       |   |-- ipfsUtils.js
 |       |   |-- hotelUtils.js
+|       |   |-- ipfsUtils.js
 |       |   |-- reservationUtils.js
 |       |   |-- roomUtils.js
+|       |   |-- statisticsUtils.js
 |       |   `-- web3Utils.js
 |       |
+|       |-- App.css
 |       |-- App.js
-|       `-- index.js
+|       |-- App.test.js
+|       |-- index.css
+|       |-- index.js
+|       |-- logo.svg
+|       |-- reportWebVitals.js
+|       `-- setupTests.js
 |
 |-- contracts/
-|   |-- HotelBooking.json
-|   `-- HotelBooking.sol
+|   |-- artifacts/
+|   |-- HotelBooking.sol
+|   `-- .gitkeep
 |
-`-- migrations/
-    `-- 2_deploy_contracts.js
+|-- migrations/
+|   |-- 2_deploy_contracts.js
+|   `-- .gitkeep
+|
+|-- test/
+|   |-- .gitignore
+|   `-- .prettierrc.json
+|
+|-- .gitignore
+|-- package-lock.json
+|-- package.json
+|-- README.md
+|-- truffle-config.js
+|-- truffle_deploy_full.bat
+|-- truffle_migrate.bat
+`-- yarn.lock
