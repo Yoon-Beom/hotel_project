@@ -170,34 +170,24 @@ export const getDaysInMonth = (year, month) => {
  */
 export const getCurrentDate = () => formatDate(new Date());
 
-
-
-
 // =============================================================================
-// AvailableHotels(체크인/아웃 날짜) => ReservationPage(형변환) => AddReservation(날짜 선택할 때 미리 설정되도록)
+// 연도 범위 계산
 // =============================================================================
+
 /**
- * 날짜 문자열을 'YYYY-MM-DD' 형식으로 변환하는 함수
- * @param {string} dateString - 변환할 날짜 문자열 (YYMMDD 또는 YYYYMMDD 형식)
- * @returns {string} 'YYYY-MM-DD' 형식의 날짜 문자열
+ * 현재 연도부터 과거로 지정된 수만큼의 연도 배열을 반환합니다.
+ * @function getRecentYears
+ * @param {number} [currentYear] - 기준 연도 (기본값: 현재 연도)
+ * @param {number} [numYears=4] - 가져올 연도의 수
+ * @returns {number[]} 연도 배열 (내림차순)
  */
-/*
-export const convertToDateInputFormat = (dateString) => {
-    if (!dateString) return '';
-    if (typeof dateString !== 'string') return '';
-    if (dateString.includes('-')) return dateString; // 이미 'YYYY-MM-DD' 형식인 경우
-
-    let year, month, day;
-    if (dateString.length === 8) {
-        // YYYYMMDD 형식
-        year = dateString.slice(0, 4);
-        month = dateString.slice(4, 6);
-        day = dateString.slice(6, 8);
-    } else {
-        console.error("Invalid date string format:", dateString);
-        return '';
+export const getRecentYears = (currentYear = null, numYears = 4) => {
+    if (currentYear === null) {
+        currentYear = new Date().getFullYear();
     }
-
-    return `${year}-${month}-${day}`;
+    
+    return Array.from(
+        { length: numYears }, 
+        (_, index) => currentYear - index
+    );
 };
-*/

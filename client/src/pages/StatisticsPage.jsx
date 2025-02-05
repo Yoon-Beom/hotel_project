@@ -1,17 +1,12 @@
-import React, { useState, useCallback } from 'react';
-import MonthCalendar from '../components/MonthCalendar';
+// client/src/pages/StatisticsPage.jsx
+import React, { useState, useCallback, useMemo } from 'react';
+import MonthCalendar from '../components/calendar/MonthCalendar';
 import useStatistics from '../hooks/useStatistics';
 import { getCurrentDate } from '../utils/dateUtils';
 import '../styles/pages/StatisticsPage.css';
 
-/**
- * 통계 페이지 컴포넌트
- * 월별 예약 통계를 표시합니다.
- * @component
- * @returns {JSX.Element} StatisticsPage 컴포넌트
- */
 const StatisticsPage = () => {
-    const currentDate = getCurrentDate();
+    const currentDate = useMemo(() => getCurrentDate(), []);
     const currentYear = Math.floor(currentDate / 10000);
     const currentMonth = Math.floor((currentDate % 10000) / 100) - 1;
 
@@ -21,20 +16,16 @@ const StatisticsPage = () => {
 
     const months = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
 
-    /**
-     * 월 선택 핸들러
-     * @function handleMonthClick
-     * @param {number} index - 선택된 월의 인덱스 (0-11)
-     */
+    // 현재 날짜로 이동하는 핸들러
+    const handleCurrentDate = useCallback(() => {
+        setSelectedYear(currentYear);
+        setSelectedMonth(currentMonth);
+    }, [currentYear, currentMonth]);
+
     const handleMonthClick = useCallback((index) => {
         setSelectedMonth(index);
     }, []);
 
-    /**
-     * 년도 변경 핸들러
-     * @function handleYearChange
-     * @param {number} change - 년도 변경값 (+1 또는 -1)
-     */
     const handleYearChange = useCallback((change) => {
         setSelectedYear(prevYear => prevYear + change);
     }, []);
@@ -45,10 +36,18 @@ const StatisticsPage = () => {
     return (
         <div className="statistics-page">
             <h1>예약 통계</h1>
-            <div className="year-selector">
-                <button onClick={() => handleYearChange(-1)}>이전 년도</button>
-                <span>{selectedYear}년</span>
-                <button onClick={() => handleYearChange(1)}>다음 년도</button>
+            <div className="navigation-controls">
+                <div className="year-selector">
+                    <button onClick={() => handleYearChange(-1)}>이전 년도</button>
+                    <span>{selectedYear}년</span>
+                    <button onClick={() => handleYearChange(1)}>다음 년도</button>
+                </div>
+                <button 
+                    className="current-date-button"
+                    onClick={handleCurrentDate}
+                >
+                    현재 월로 이동
+                </button>
             </div>
             <div className="month-buttons">
                 {months.map((month, index) => (
@@ -64,7 +63,9 @@ const StatisticsPage = () => {
             {selectedMonth !== null && (
                 <MonthCalendar 
                     year={selectedYear}
-                    month={selectedMonth} 
+                    month={selectedMonth}
+                    onMonthChange={setSelectedMonth}
+                    onYearChange={setSelectedYear}
                     fetchMonthlyReservations={fetchMonthlyReservations}
                 />
             )}

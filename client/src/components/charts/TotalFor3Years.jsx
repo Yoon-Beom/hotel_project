@@ -1,4 +1,4 @@
-// client\src\components\TotalFor3Years.jsx
+// client/src/components/TotalFor3Years.jsx
 
 // 차트 라이브러리 관련 import
 import React, { useState, useEffect } from 'react';
@@ -14,10 +14,10 @@ import {
 } from 'chart.js';
 
 // 커스텀 훅과 유틸리티
-import useHotel from '../hooks/useHotel';
-import useStatistics from '../hooks/useStatistics';
-import { formatDate } from '../utils/dateUtils';
-import '../styles/components/TotalFor3Years.css';
+import useHotel from '../../hooks/useHotel';
+import useStatistics from '../../hooks/useStatistics';
+import { formatDate } from '../../utils/dateUtils';
+import '../../styles/components/TotalFor3Years.css';
 
 // 차트 애니메이션 비활성화
 ChartJS.defaults.animation = false;

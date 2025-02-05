@@ -1,10 +1,11 @@
+// client/src/components/AvailableHotels.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useHotel } from '../hooks/useHotel';
-import { useRoom } from '../hooks/useRoom';
-import { formatDate } from '../utils/dateUtils';
-import '../styles/components/AvailableHotels.css';
-import { weiToEther } from '../utils/web3Utils';
+import { useHotel } from '../../hooks/useHotel';
+import { useRoom } from '../../hooks/useRoom';
+import { formatDate } from '../../utils/dateUtils';
+import '../../styles/components/AvailableHotels.css';
+import { weiToEther } from '../../utils/web3Utils';
 
 const AvailableHotels = ({ checkIn, checkOut }) => {
   const navigate = useNavigate();

@@ -65,19 +65,16 @@ export const getRoomDateStatus = async (contract, hotelId, roomNumber, date) => 
  * @throws {Error} 가용성 확인 실패 시 에러
  */
 export const checkRoomAvailability = async (contract, hotelId, roomNumber, checkInDate, checkOutDate) => {
-    console.log("contract, hotelId, roomNumber, checkInDate, checkOutDate" ,contract, hotelId, roomNumber, checkInDate, checkOutDate)
     if (!isValidDate(checkInDate) || !isValidDate(checkOutDate)) {
         throw new Error('유효하지 않은 날짜입니다.');
     }
     try {
         const dates = getDateArray(checkInDate, checkOutDate);
-        console.log("dates", dates)
         return await contract.methods.isRoomAvailable(hotelId, roomNumber, dates).call();
     } catch (error) {
         throw new Error(`객실 가용성 확인 실패 (호텔 ID: ${hotelId}, 객실 번호: ${roomNumber}, 체크인: ${checkInDate}, 체크아웃: ${checkOutDate}): ${error.message}`);
     }
 };
-console.log("checkRoomAvailability", checkRoomAvailability)
 
 
 // =============================================================================
@@ -99,9 +96,6 @@ export const loadRooms = async (contract, hotelId) => {
         const rooms = await Promise.all(roomNumbers.map(async roomNumber => {
             const room = await contract.methods.hotelRooms(hotelId, roomNumber).call();
 
-            console.log("room's status" , room.status)
-            console.log("room's status-string" , getRoomStatusString(Number(room.status)))
-            
             return {
                 ...room,
                 roomNumber: Number(roomNumber),
@@ -129,8 +123,6 @@ export const loadRoomInfo = async (contract, hotelId, roomNumber) => {
     try {
         const room = await contract.methods.hotelRooms(hotelId, roomNumber).call();
 
-        console.log("room" , room);
-        
         return {
             ...room,
             roomNumber: Number(roomNumber),

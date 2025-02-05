@@ -1,7 +1,8 @@
+// client/src/components/HotelList.jsx
 import React, { useEffect, useState } from 'react';
-import useHotel from '../hooks/useHotel';
-import useWeb3 from '../hooks/useWeb3';
-import RoomList from './RoomList';
+import useHotel from '../../hooks/useHotel';
+import useWeb3 from '../../hooks/useWeb3';
+import RoomList from './../room/RoomList';
 // import '../styles/components/HotelList.css';
 
 /**

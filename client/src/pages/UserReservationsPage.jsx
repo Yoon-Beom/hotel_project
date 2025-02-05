@@ -1,7 +1,8 @@
+// client/src/pages/UserReservationsPage.jsx
 import React, { useEffect, useCallback } from 'react';
 import useReservation from '../hooks/useReservation';
 import useWeb3 from '../hooks/useWeb3';
-import ReservationList from '../components/ReservationList';
+import ReservationList from '../components/reservation/ReservationList';
 import { formatDate } from '../utils/dateUtils';
 // import '../styles/pages/UserReservationsPage.css';
 

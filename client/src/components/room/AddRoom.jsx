@@ -1,5 +1,6 @@
+// client/src/components/AddRoom.jsx
 import React, { useState } from 'react';
-import useRoom from '../hooks/useRoom';
+import useRoom from '../../hooks/useRoom';
 // import '../styles/components/AddRoom.css';
 
 /**

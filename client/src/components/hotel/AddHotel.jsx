@@ -1,6 +1,6 @@
 // client/src/components/AddHotel.jsx
 import React, { useState } from 'react';
-import useHotel from '../hooks/useHotel';
+import useHotel from '../../hooks/useHotel';
 // import useIPFS from '../hooks/useIPFS';
 // import '../styles/components/AddHotel.css';
 
