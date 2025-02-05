@@ -148,7 +148,9 @@ const TotalFor3Years = ({ selectedDate }) => {
         stacked: false,
         grid: {
           display: true,
-          drawBorder: true
+          drawBorder: true,
+          color: 'rgba(0, 0, 0, 0.2)',  // 눈금선 색상을 더 진하게 설정
+          lineWidth: 1  // 선 굵기 설정
         },
         title: {
           display: true,
@@ -167,26 +169,52 @@ const TotalFor3Years = ({ selectedDate }) => {
           stepSize: 1 // 눈금 간격을 1로 설정
         },
         min: 0,  // 최소값 0으로 설정
-        max: 8, // 최대값 10으로 설정
-        suggestedMax: 8 // 제안된 최대값을 10으로 설정
+        max: 10, // 최대값 10으로 설정
+        suggestedMax: 10 // 제안된 최대값을 10으로 설정
       },
       y: {
         offset: true,
         stacked: false,
         grid: {
           offset: true,
-          drawBorder: false
+          drawBorder: false,
+          color: 'rgba(0, 0, 0, 0.2)',  // 눈금선 색상을 더 진하게 설정
+          lineWidth: 1  // 선 굵기 설정
         },
         ticks: {
           font: {
             size: 14,
             weight: 'bold'
           },
-          padding: 40
+          // 호텔 이름 간격 조절을 위한 추가 설정
+          autoSkip: false,  // 자동 건너뛰기 비활성화
+          maxRotation: 0,   // 텍스트 회전 없음
+          minRotation: 0,  // 텍스트 회전 없음
+          padding: 40,
+          callback: function(value) {
+            const label = this.getLabelForValue(value);
+          // 긴 호텔 이름을 여러 줄로 나누기
+          const words = label.split(' ');
+          const lines = [];
+          let currentLine = words[0];
+
+            for(let i = 1; i < words.length; i++) {
+              if (currentLine.length + words[i].length < 15) {
+                currentLine += " " + words[i];
+              } else {
+                lines.push(currentLine);
+                currentLine = words[i];
+              }
+            }
+            lines.push(currentLine);
+            return lines;
+          }
         },
+        
         afterFit: (scaleInstance) => {
-          scaleInstance.width = 150;
-        }
+          scaleInstance.width = 200;
+        },
+        
       }
     }
   };
