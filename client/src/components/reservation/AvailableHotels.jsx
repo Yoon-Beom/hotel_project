@@ -20,10 +20,13 @@ const AvailableHotels = ({ checkIn, checkOut }) => {
   useEffect(() => {
     const fetchHotelRooms = async () => {
       if (!hotels || !checkIn || !checkOut) return;
+
+      console.log("props from mc checkIn, checkOut", checkIn, checkOut)
       
       const checkInDate = formatDate(checkIn);
       const checkOutDate = formatDate(checkOut);
-  
+      console.log("state from available25 checkInDate, checkInDate" , checkInDate, checkInDate)
+      
       try {
         const filteredHotels = await filterAvailableHotels(checkInDate, checkOutDate);
         
@@ -52,14 +55,15 @@ const AvailableHotels = ({ checkIn, checkOut }) => {
     fetchHotelRooms();
   }, [hotels, getAvailableRooms, checkIn, checkOut, filterAvailableHotels]);
 
-  const handleRoomClick = (hotelId, roomNumber) => {
-    navigate(`/reservation/${hotelId}/${roomNumber}`, {
-      state: {
-        checkInDate: formatDate(checkIn),
-        checkOutDate: formatDate(checkOut)
-      }
-    });
-  };
+ // handleRoomClick 함수 수정
+const handleRoomClick = (hotelId, roomNumber) => {
+  navigate(`/reservation/${hotelId}/${roomNumber}`, {
+    state: {
+      checkInDate: formatDate(checkIn),
+      checkOutDate: formatDate(checkOut)
+    }
+  });
+};
 
   if (!hotelsWithRooms || hotelsWithRooms.length === 0) {
     return (
