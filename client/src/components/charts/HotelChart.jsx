@@ -1,4 +1,4 @@
-// client/src/components/HotelChart.jsx
+// client/src/components/charts/HotelChart.jsx
 import React, { useEffect, useState, useMemo } from 'react';  // useMemo 추가
 import { Bar } from 'react-chartjs-2';
 import {

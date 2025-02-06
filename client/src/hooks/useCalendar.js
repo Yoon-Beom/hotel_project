@@ -46,11 +46,6 @@ export const useCalendar = () => {
         const normalizedStart = start ? normalizeCalendarDate(start) : null;
         const normalizedEnd = end ? normalizeCalendarDate(end) : null;
 
-        console.log("▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼");
-        console.log("selectDate[0]: ", selectDate[0]);
-        console.log("selectDate[1]: ", selectDate[1]);
-        console.log("▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲");
-
         // 단일 선택
         if (end == null) {
             setSelectedDates([normalizedStart, null]);

@@ -1,4 +1,4 @@
-// client/src/components/HotelCard.jsx
+// client/src/components/hotel/HotelCard.jsx
 import React from 'react';
 import RoomList from '../RoomList';
 import { shortenAddress } from '../../utils/web3Utils';

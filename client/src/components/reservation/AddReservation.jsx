@@ -1,4 +1,4 @@
-// client/src/components/AddReservation.jsx
+// client/src/components/reservation/AddReservation.jsx
 import React, { useState, useEffect } from 'react';
 import useReservation from '../../hooks/useReservation';
 import useWeb3 from '../../hooks/useWeb3';
@@ -36,18 +36,18 @@ const AddReservation = ({ hotelId, roomId, room, initialCheckIn, initialCheckOut
 
 
 
-   // 가격과 숙박일수 계산
-   useEffect(() => {
-       if (initialCheckIn && initialCheckOut && room) {
-           if (isValidReservationDate(initialCheckIn, initialCheckOut)) {
-               const { nights } = calculateReservationDuration(initialCheckIn, initialCheckOut);
-               setNights(nights); // nights 값 저장
-               const pricePerNight = weiToEther(room.price);
-               const total = (nights * parseFloat(pricePerNight)).toFixed(4);
-               setTotalPrice(total);
-           }
-       }
-   }, [initialCheckIn, initialCheckOut, room]);
+    // 가격과 숙박일수 계산
+    useEffect(() => {
+        if (initialCheckIn && initialCheckOut && room) {
+            if (isValidReservationDate(initialCheckIn, initialCheckOut)) {
+                const { nights } = calculateReservationDuration(initialCheckIn, initialCheckOut);
+                setNights(nights); // nights 값 저장
+                const pricePerNight = weiToEther(room.price);
+                const total = (nights * parseFloat(pricePerNight)).toFixed(4);
+                setTotalPrice(total);
+            }
+        }
+    }, [initialCheckIn, initialCheckOut, room]);
 
     const handleSubmit = async () => {
         if (!initialCheckIn || !initialCheckOut) return;

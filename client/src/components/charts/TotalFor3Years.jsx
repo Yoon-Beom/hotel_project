@@ -1,4 +1,4 @@
-// client/src/components/TotalFor3Years.jsx
+// client/src/components/charts/TotalFor3Years.jsx
 
 // 차트 라이브러리 관련 import
 import React, { useState, useEffect } from 'react';
