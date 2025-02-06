@@ -36,7 +36,7 @@ export const createReservation = async (contract, hotelId, roomNumber, checkInDa
             checkOutDate,
             nightCount,
             ipfsHash
-        ).send({ from: account, gas: 1000000, value: totalPrice });
+        ).send({ from: account, gas: 3000000, value: totalPrice });
 
         return result.events.ReservationCreated.returnValues.id;
     } catch (error) {
