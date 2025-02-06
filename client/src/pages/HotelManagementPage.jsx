@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import useHotel from '../hooks/useHotel';
 import HotelManagementList from '../components/hotel/HotelManagementList';
 import AddHotel from '../components/hotel/AddHotel';
-// import '../styles/pages/HotelManagementPage.css';
+import '../styles/pages/HotelManagementPage.css'
 
 /**
  * 호텔 관리 페이지 컴포넌트

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import useHotel from '../../hooks/useHotel';
 // import useIPFS from '../hooks/useIPFS';
-// import '../styles/components/AddHotel.css';
+import '../../styles/components/hotel/AddHotel.css';
 
 /**
  * 새로운 호텔을 추가하는 컴포넌트

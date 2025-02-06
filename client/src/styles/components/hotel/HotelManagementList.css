@@ -1,0 +1,134 @@
+/* client/src/styles/components/hotel/HotelManagementList.css */
+.hotel-management-list {
+    width: 100%;
+}
+
+.hotel-item {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e1e4e8;
+}
+
+/* 호텔 정보 섹션 */
+.hotel-info-section {
+    background-color: #eef1f3;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.hotel-info-container {
+    margin-left: 0px;
+    display: flex;
+    gap: 20px;
+    align-items: center; /* flex-start에서 center로 변경 */
+}
+
+.hotel-image-container {
+    flex: 0 0 300px;
+    position: relative;
+    margin-top: 20px; /* 상단 여백 추가 */
+}
+
+.hotel-image-placeholder {
+    width: 100%;
+    height: 200px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 16px;
+    border: 1px solid #e1e4e8;
+    border-radius: 4px;
+}
+
+.image-navigation {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+.nav-button {
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-button:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* 호텔 정보 테이블 */
+.hotel-info-table {
+    flex: 1;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px; /* 테이블 상단 여백 추가 */
+    margin-left: 60px;
+}
+
+.hotel-info-table td {
+    padding: 10px 0;
+}
+
+.hotel-info-table .label {
+    width: 120px;
+    color: #666;
+}
+
+.hotel-info-table .value {
+    color: #333;
+    font-weight: 500;
+}
+
+/* 객실 목록 섹션 */
+.room-list-section {
+    background-color: #eef1f3;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+/* 객실 추가 섹션 */
+.add-room-section {
+    background-color: #eef1f3;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: -5px;
+}
+
+/* 공통 스타일 */
+h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.loading, .error {
+    text-align: center;
+    padding: 15px;
+    color: #666;
+    background-color: #eef1f3;
+    border-radius: 8px;
+}
+
+.error {
+    color: #e74c3c;
+}

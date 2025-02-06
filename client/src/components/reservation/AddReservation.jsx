@@ -2,10 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import useReservation from '../../hooks/useReservation';
 import useWeb3 from '../../hooks/useWeb3';
-import { formatDate, convertToYYYYMMDD } from '../../utils/dateUtils';
 import { weiToEther, etherToWei } from '../../utils/web3Utils';
 import { calculateReservationDuration, isValidReservationDate } from '../../utils/reservationUtils';
-import '../../styles/components/AddReservation.css'
+import '../../styles/components/reservation/AddReservation.css'
 
 
 /**

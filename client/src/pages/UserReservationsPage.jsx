@@ -4,7 +4,7 @@ import useReservation from '../hooks/useReservation';
 import useWeb3 from '../hooks/useWeb3';
 import ReservationList from '../components/reservation/ReservationList';
 import { formatDate } from '../utils/dateUtils';
-// import '../styles/pages/UserReservationsPage.css';
+import '../styles/pages/UserReservationsPage.css';
 
 /**
  * 사용자의 예약 내역을 표시하는 페이지 컴포넌트

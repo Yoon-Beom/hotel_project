@@ -1,0 +1,113 @@
+/* client/src/styles/components/room/RoomList.css */
+.room-list {
+    width: 100%;
+}
+
+.room-list h3 {
+    font-size: 16px;
+    margin: 15px 0;
+    color: #333;
+}
+
+.room-list-container {
+    width: 100%;
+}
+
+.room-info-section {
+    background-color: #ffffff;
+    border-radius: 8px; /* border-radius 값 증가 */
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #e1e4e8;
+}
+
+.room-info-container {
+    display: flex;
+    gap: 60px; /* 기존 20px에서 60px로 증가 */
+    align-items: center;
+    margin-top: -10px;
+}
+
+.hotel-image-container {
+    flex: 0 0 300px;
+    position: relative;
+    margin-top: 10px; /* 기존 20px에서 10px로 감소 */
+}
+
+.hotel-image-placeholder {
+    width: 100%;
+    height: 200px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 14px;
+    border: 1px solid #e1e4e8;
+    border-radius: 4px;
+}
+
+.image-navigation {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+.nav-button {
+    background: none; /* 배경색 제거 */
+    border: none;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+    box-shadow: none; /* 그림자 제거 */
+}
+
+.nav-button:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.room-info-table {
+    flex: 1;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px; /* 기존 값에서 감소하여 위치 조정 */
+}
+
+.room-info-table td {
+    padding: 8px 0;
+}
+
+.room-info-table .label {
+    width: 80px;
+    color: #666;
+    font-size: 14px;
+}
+
+.room-info-table .value {
+    color: #333;
+    font-size: 14px;
+}
+
+.loading, .error, .no-rooms {
+    text-align: center;
+    padding: 15px;
+    color: #666;
+    background-color: #ffffff;
+    border-radius: 4px;
+    margin-top: 10px;
+    font-size: 14px;
+    border: 1px solid #e1e4e8;
+}
+
+.error {
+    color: #e74c3c;
+}

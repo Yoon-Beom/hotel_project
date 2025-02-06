@@ -1,5 +1,7 @@
+/* client\src\styles\pages\ReservationPage.css */
+
 .reservation-page {
-    max-width: 800px;
+    max-width: 100%;
     margin: 0 auto;
     padding: 20px;
     background-color: #f5f7fa; /* 전체 페이지 배경색 추가 */

@@ -1,0 +1,47 @@
+/* client/src/styles/pages/HotelManagementPage.css */
+.hotel-management-page {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 15px;
+    background-color: #f5f7fa;
+}
+
+.hotel-management-page h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    color: #333;
+}
+
+.add-hotel-section {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e1e4e8;
+}
+
+.user-hotels-list {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e1e4e8;
+}
+
+.loading, .error {
+    text-align: center;
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    color: #666;
+}
+
+.error {
+    color: #e74c3c;
+    background-color: #fdeaea;
+}

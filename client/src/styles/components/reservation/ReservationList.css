@@ -1,23 +1,24 @@
 /* 예약 목록 전체 컨테이너 */
 .reservation-list {
-    max-width: 800px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 20px;
-}
-
-/* 개별 예약 아이템 카드 스타일 */
-.reservation-item {
-    background-color: #ffffff;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 5px;
 }
 
 /* 예약 페이지 제목 */
 .reservation-list h2 {
     font-size: 24px;
     margin-bottom: 20px;
+}
+
+/* 개별 예약 아이템 카드 스타일 */
+.reservation-item {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 10px;
+    margin : -5px;
+    margin-bottom: 25px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* 정보 섹션 컨테이너 */
@@ -47,6 +48,17 @@
     color: #333;
     font-weight: 500;
 }
+
+/* 예약 상태 스타일 */
+.reservation-info-table .value .status-active {
+    color: #27ae60;
+}
+
+.reservation-info-table .value .status-cancelled {
+    color: #e74c3c;
+}
+
+
 
 /* 예약 취소 버튼 */
 .cancel-button {
