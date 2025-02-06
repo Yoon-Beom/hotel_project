@@ -1,88 +1,101 @@
 // client/src/pages/HomePage.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import useStatistics from '../hooks/useStatistics';
 import { formatDate } from '../utils/dateUtils';
 import MonthlyChart from '../components/charts/MonthlyChart';
-import DailyChart from '../components/charts/DailyChart';
-import HotelChart from '../components/charts/HotelChart';
+import MonthCalendar from '../components/calendar/MonthCalendar';
+import '../styles/pages/HomePage.css';
 
-/**
- * 홈페이지 컴포넌트
- * 다양한 통계 데이터를 차트로 표시합니다.
- * @returns {JSX.Element} HomePage 컴포넌트
- */
 const HomePage = () => {
-    const {
-        fetchMonthlyReservations,
-        fetchDailyReservations,
-        fetchReservationsByDate,
-        isLoading,
-        error
-    } = useStatistics();
-
+    const { fetchMonthlyReservations, isLoading, error } = useStatistics();
     const [monthlyData, setMonthlyData] = useState(null);
-    const [dailyData, setDailyData] = useState(null);
-    const [dateData, setDateData] = useState(null);
+
+    // StatisticsPage에서 가져온 상태들
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+
+    const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+    const [selectedYear, setSelectedYear] = useState(currentYear);
+
+    const months = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                // 월별 예약 통계
                 const monthly = await fetchMonthlyReservations();
                 setMonthlyData(monthly);
-                console.log("월별 데이터:", monthly);
-
-                // 2025년 2월의 일별 예약 데이터
-                const daily = await fetchDailyReservations(2025, 2);
-                setDailyData(daily);
-                console.log("일별 데이터:", daily);
-
-                // 오늘 날짜의 호텔별 예약 데이터
-                const today = formatDate(new Date());
-                const byDate = await fetchReservationsByDate(today);
-                setDateData(byDate);
-                console.log("호텔별 데이터:", byDate);
             } catch (err) {
                 console.error("데이터 로드 중 오류:", err);
             }
         };
         loadData();
-    }, [fetchMonthlyReservations, fetchDailyReservations, fetchReservationsByDate]);
+    }, [fetchMonthlyReservations]);
+
+    // 현재 날짜로 이동하는 핸들러
+    const handleCurrentDate = useCallback(() => {
+        setSelectedYear(currentYear);
+        setSelectedMonth(currentMonth);
+    }, [currentYear, currentMonth]);
+
+    const handleMonthClick = useCallback((index) => {
+        setSelectedMonth(index);
+    }, []);
+
+    const handleYearChange = useCallback((change) => {
+        setSelectedYear(prevYear => prevYear + change);
+    }, []);
 
     if (isLoading) return <div>데이터를 불러오는 중...</div>;
     if (error) return <div>에러 발생: {error}</div>;
 
     return (
-        <div style={{ padding: '20px' }}>
+        <div className="home-container">
             <h1>호텔 예약 시스템 통계</h1>
 
-            {monthlyData && (
-                <MonthlyChart monthlyData={monthlyData} />
-            )}
+            {/* 월별 예약 통계 차트 */}
+            <div className="chart-section">
+                {monthlyData && <MonthlyChart monthlyData={monthlyData} />}
+            </div>
 
-            {dailyData && (
-                <DailyChart 
-                    dailyData={dailyData}
-                    year={2025}
-                    month={2}
-                />
-            )}
-
-            {dateData && (
-                <HotelChart 
-                    reservationData={dateData}
-                    selectedDate={new Date()}
-                />
-            )}
-
-            {/* 테스트용 데이터 출력 */}
-            <div style={{ marginTop: '50px' }}>
-                <h3>원본 데이터 (테스트용)</h3>
-                <pre>{JSON.stringify({ monthlyData, dailyData, dateData }, null, 2)}</pre>
+            {/* StatisticsPage 내용 */}
+            <div className="statistics-section">
+                <h2>일별 예약 현황</h2>
+                <div className="navigation-controls">
+                    <button
+                        className="current-date-button"
+                        onClick={handleCurrentDate}
+                    >
+                        현재 월로 이동
+                    </button>
+                    <div className="year-selector">
+                        <button onClick={() => handleYearChange(-1)}>이전 년도</button>
+                        <span>{selectedYear}년</span>
+                        <button onClick={() => handleYearChange(1)}>다음 년도</button>
+                    </div>
+                </div>
+                <div className="month-buttons">
+                    {months.map((month, index) => (
+                        <button
+                            key={index}
+                            onClick={() => handleMonthClick(index)}
+                            className={selectedMonth === index ? 'selected' : ''}
+                        >
+                            {month}
+                        </button>
+                    ))}
+                </div>
+                {selectedMonth !== null && (
+                    <MonthCalendar
+                        year={selectedYear}
+                        month={selectedMonth}
+                        onMonthChange={setSelectedMonth}
+                        onYearChange={setSelectedYear}
+                        fetchMonthlyReservations={fetchMonthlyReservations}
+                    />
+                )}
             </div>
         </div>
-
-        
     );
 };
 

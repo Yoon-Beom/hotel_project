@@ -84,7 +84,7 @@ const AddReservation = ({ hotelId, roomId, room, initialCheckIn, initialCheckOut
                                 <td className="value">
                                     {initialCheckIn && 
                                         `${('' + initialCheckIn).substring(0, 4)}년 ${('' + initialCheckIn).substring(4, 6)}월 ${('' + initialCheckIn).substring(6, 8)}일`}
-                                    <span className="time-info">(15:00까지 입실)</span>
+                                    <span className="time-info">(15:00이후부터 입실)</span>
                                 </td>
                             </tr>
                             <tr>
@@ -92,7 +92,7 @@ const AddReservation = ({ hotelId, roomId, room, initialCheckIn, initialCheckOut
                                 <td className="value">
                                     {initialCheckOut && 
                                         `${('' + initialCheckOut).substring(0, 4)}년 ${('' + initialCheckOut).substring(4, 6)}월 ${('' + initialCheckOut).substring(6, 8)}일`}
-                                    <span className="time-info">1(1:00까지 퇴실)</span>
+                                    <span className="time-info">(11:00까지 퇴실)</span>
                                 </td>
                             </tr>
                             <tr>

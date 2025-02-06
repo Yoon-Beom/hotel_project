@@ -26,6 +26,8 @@ ChartJS.register(
 const HotelChart = ({ reservationData, selectedDate }) => {
     const { getColorForYear } = useChart();
     const { hotels, fetchHotels } = useHotel();
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [chartData, setChartData] = useState(null);
 
     // years를 useMemo로 감싸서 매 렌더링마다 재생성되는 것을 방지
@@ -33,26 +35,45 @@ const HotelChart = ({ reservationData, selectedDate }) => {
 
     // 호텔 데이터 가져오기
     useEffect(() => {
-        fetchHotels();
+        const loadHotels = async () => {
+            try {
+                setIsLoading(true);
+                await fetchHotels();
+                setError(null);
+            } catch (err) {
+                setError('호텔 데이터를 불러오는데 실패했습니다.');
+                console.error("호텔 데이터 로딩 에러:", err);
+            }
+        };
+        loadHotels();
     }, [fetchHotels]);
 
     // 차트 데이터 생성
     useEffect(() => {
         if (!hotels.length || !reservationData) return;
 
-        const data = {
-            labels: Object.keys(reservationData).map(hotelId => {
-                const hotel = hotels.find(h => h.id === Number(hotelId));
-                return hotel ? hotel.name : `호텔 ${hotelId}`;
-            }),
-            datasets: years.map((year, index) => ({
-                label: year.toString(),
-                data: Object.values(reservationData).map(yearData => yearData[index]),
-                backgroundColor: `rgba(${getColorForYear(year, 0.5)})`,
-                borderColor: `rgba(${getColorForYear(year, 1)})`,
-            }))
-        };
-        setChartData(data);
+        try {
+            setIsLoading(true);
+            const data = {
+                labels: Object.keys(reservationData).map(hotelId => {
+                    const hotel = hotels.find(h => h.id === Number(hotelId));
+                    return hotel ? hotel.name : `호텔 ${hotelId}`;
+                }),
+                datasets: years.map((year, index) => ({
+                    label: year.toString(),
+                    data: Object.values(reservationData).map(yearData => yearData[years.length - 1 - index] || 0),
+                    backgroundColor: `rgba(${getColorForYear(year, 0.5)})`,
+                    borderColor: `rgba(${getColorForYear(year, 1)})`,
+                }))
+            };
+            setChartData(data);
+            setError(null);
+        } catch (err) {
+            setError('차트 데이터 처리 중 오류가 발생했습니다.');
+            console.error("차트 데이터 처리 에러:", err);
+        } finally {
+            setIsLoading(false);
+        }
     }, [hotels, reservationData, years, getColorForYear]);
 
     // options를 useMemo로 감싸서 매 렌더링마다 재생성되는 것을 방지
@@ -73,7 +94,17 @@ const HotelChart = ({ reservationData, selectedDate }) => {
     const options = useMemo(() => ({
         responsive: true,
         maintainAspectRatio: false,
+        layout: {
+            padding: {
+                top: 50,
+                bottom: 50,
+                left: 30,
+                right: 40
+            }
+        },
+        height: Math.max(400, Object.keys(reservationData).length * 100),
         indexAxis: 'y',
+        barThickness: 20,
         plugins: {
             legend: {
                 position: 'top',
@@ -102,12 +133,20 @@ const HotelChart = ({ reservationData, selectedDate }) => {
         }
     }), [selectedDate, getMaxValue]); // getMaxValue를 의존성 배열에 추가
 
+    const containerStyle = {
+        height: `${Math.max(400, Object.keys(reservationData).length * 120)}px`,
+        width: '98%',
+        margin: '20px auto',
+        padding: '20px'
+    };
 
-    if (!chartData) return null;
+    if (isLoading) return <div className="loading">차트 데이터를 불러오는 중...</div>;
+    if (error) return <div className="error">에러: {error}</div>;
+    if (!chartData) return <div className="no-data">표시할 데이터가 없습니다.</div>;
 
     return (
-        <div style={{ marginBottom: '40px', height: '400px' }}>
-            { console.log("HotelChart 실행") }
+        <div style={containerStyle}>
+            {console.log("HotelChart 실행")}
             <h2>호텔별 예약 통계</h2>
             <Bar data={chartData} options={options} />
         </div>

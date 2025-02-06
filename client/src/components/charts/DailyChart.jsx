@@ -1,4 +1,4 @@
-// client/src/components/DailyChart.jsx
+// client/src/components/charts/DailyChart.jsx
 import React, { useMemo } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
