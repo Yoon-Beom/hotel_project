@@ -6,7 +6,7 @@ import { useHotel } from '../../hooks/useHotel';
 import { useRoom } from '../../hooks/useRoom';
 import { formatDate } from '../../utils/dateUtils';
 import AvailableRoomList from './AvailableRoomList';
-import '../../styles/components/AvailableHotels.css';
+import '../../styles/components/reservation/AvailableHotels.css';
 
 const AvailableHotels = ({ checkIn, checkOut }) => {
   const navigate = useNavigate();
