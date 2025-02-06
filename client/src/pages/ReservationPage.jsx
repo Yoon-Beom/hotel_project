@@ -5,7 +5,7 @@ import useHotel from '../hooks/useHotel';
 import useRoom from '../hooks/useRoom';
 import AddReservation from '../components/reservation/AddReservation';
 import { weiToEther } from '../utils/web3Utils';
-// import '../styles/pages/ReservationPage.css';
+import '../styles/pages/ReservationPage.css';
 
 /**
  * 예약 페이지 컴포넌트

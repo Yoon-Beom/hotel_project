@@ -1,4 +1,4 @@
-// client/src/components/CalendarHeader.jsx
+// client/src/components/calendar/CalendarHeader.jsx
 import React from 'react';
 import { formatDateDisplay } from '../../utils/calendarUtils';
 

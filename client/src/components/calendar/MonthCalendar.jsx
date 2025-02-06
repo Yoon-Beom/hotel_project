@@ -1,4 +1,4 @@
-// client/src/components/MonthCalendar.jsx
+// client/src/components/calendar/MonthCalendar.jsx
 import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -56,7 +56,6 @@ const MonthCalendar = ({
 
                     const formattedDate = formatDate(selectedDates[0]);
                     const data = await fetchReservationsByDate(formattedDate);
-                    console.log("data: ", data);
                     setDateData(data);
                 } catch (err) {
                     console.error("호텔 데이터 로드 중 오류:", err);
@@ -94,7 +93,6 @@ const MonthCalendar = ({
                         tileClassName={({ date }) => getTileClassName(date, selectedDates)}
                     />
                 </div>
-                {console.log("dateData: ", dateData)}
                 {displayMode === 'single' && dateData && (
                     <div className="chart-section">
                         <HotelChart

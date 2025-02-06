@@ -1,5 +1,5 @@
 // client/src/components/DailyChart.jsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
@@ -23,6 +23,14 @@ ChartJS.register(
 
 const DailyChart = ({ dailyData, year, month }) => {
     const { getColorForYear } = useChart();
+
+    // 최대값 계산 로직 추가
+    const calculateAdjustedMax = useMemo(() => {
+        const allValues = Object.values(dailyData);
+        if (allValues.length === 0) return 1;
+        const maxValue = Math.max(...allValues);
+        return Math.ceil(maxValue * 1.2);
+    }, [dailyData]);
 
     const chartData = {
         labels: Object.keys(dailyData).map(day => `${day}일`),
@@ -51,9 +59,9 @@ const DailyChart = ({ dailyData, year, month }) => {
         scales: {
             y: {
                 min: 0,
-                max: 20,
+                max: calculateAdjustedMax,
                 ticks: {
-                    stepSize: 1,
+                    stepSize: Math.ceil(calculateAdjustedMax/10), // 적응형 간격
                     font: { size: 12 }
                 },
                 title: {

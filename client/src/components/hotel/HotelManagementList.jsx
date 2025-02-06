@@ -1,4 +1,4 @@
-// client/src/components/HotelManagementList.jsx
+// client/src/components/hotel/HotelManagementList.jsx
 import React, { useEffect, useState, useCallback } from 'react';
 import useHotel from '../../hooks/useHotel';
 import AddRoom from '../room/AddRoom';

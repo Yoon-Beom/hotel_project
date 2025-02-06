@@ -1,11 +1,11 @@
-// client/src/components/AvailableHotels.jsx
+// client/src/components/reservation/AvailableHotels.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useHotel } from '../../hooks/useHotel';
 import { useRoom } from '../../hooks/useRoom';
 import { formatDate } from '../../utils/dateUtils';
 import '../../styles/components/AvailableHotels.css';
-import { weiToEther } from '../../utils/web3Utils';
+import AvailableRoomList from './AvailableRoomList';
 
 const AvailableHotels = ({ checkIn, checkOut }) => {
   const navigate = useNavigate();
@@ -85,18 +85,12 @@ const handleRoomClick = (hotelId, roomNumber) => {
             </div>
             <h3 className="hotel-name">{hotel.name}</h3>
             <div className="hotel-rooms">
-              {hotel.rooms.map((room) => (
-                <div 
-                  key={room.roomNumber} 
-                  className="room-info"
-                  onClick={() => handleRoomClick(hotel.id, room.roomNumber)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <p className="room-number">객실 번호: {room.roomNumber}호</p>
-                  <p className="room-price">가격: {weiToEther(room.price)} ETH</p>
-                  <p className="room-status">예약 가능</p>
-                </div>
-              ))}
+              <AvailableRoomList 
+                hotelId={hotel.id}
+                checkInDate={formatDate(checkIn)}
+                checkOutDate={formatDate(checkOut)}
+                onRoomClick={handleRoomClick}
+              />
             </div>
           </div>
         ))}

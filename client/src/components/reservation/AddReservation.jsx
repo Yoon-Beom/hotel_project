@@ -1,4 +1,4 @@
-// client/src/components/AddReservation.jsx
+// client/src/components/reservation/AddReservation.jsx
 import React, { useState, useEffect } from 'react';
 import useReservation from '../../hooks/useReservation';
 import useWeb3 from '../../hooks/useWeb3';
@@ -35,18 +35,18 @@ const AddReservation = ({ hotelId, roomId, room, initialCheckIn, initialCheckOut
 
 
 
-   // 가격과 숙박일수 계산
-   useEffect(() => {
-       if (initialCheckIn && initialCheckOut && room) {
-           if (isValidReservationDate(initialCheckIn, initialCheckOut)) {
-               const { nights } = calculateReservationDuration(initialCheckIn, initialCheckOut);
-               setNights(nights); // nights 값 저장
-               const pricePerNight = weiToEther(room.price);
-               const total = (nights * parseFloat(pricePerNight)).toFixed(4);
-               setTotalPrice(total);
-           }
-       }
-   }, [initialCheckIn, initialCheckOut, room]);
+    // 가격과 숙박일수 계산
+    useEffect(() => {
+        if (initialCheckIn && initialCheckOut && room) {
+            if (isValidReservationDate(initialCheckIn, initialCheckOut)) {
+                const { nights } = calculateReservationDuration(initialCheckIn, initialCheckOut);
+                setNights(nights); // nights 값 저장
+                const pricePerNight = weiToEther(room.price);
+                const total = (nights * parseFloat(pricePerNight)).toFixed(4);
+                setTotalPrice(total);
+            }
+        }
+    }, [initialCheckIn, initialCheckOut, room]);
 
     const handleSubmit = async () => {
         if (!initialCheckIn || !initialCheckOut) return;
@@ -75,16 +75,16 @@ const AddReservation = ({ hotelId, roomId, room, initialCheckIn, initialCheckOut
         <div className="add-reservation-container">
             <h2>예약 정보</h2>
             <div className="reservation-info">
-            <p>체크인 날짜 : {initialCheckIn && 
-                `${('' + initialCheckIn).substring(0, 4)}년 ${('' + initialCheckIn).substring(4, 6)}월 ${('' + initialCheckIn).substring(6, 8)}일`}
-            </p>
-            <p>체크아웃 날짜 : {initialCheckOut && 
-                `${('' + initialCheckOut).substring(0, 4)}년 ${('' + initialCheckOut).substring(4, 6)}월 ${('' + initialCheckOut).substring(6, 8)}일`}
-            </p>
-            <p className="date-range">
-                { `숙박일 : ${nights}박${nights + 1}일`}
-            </p>
-            <p>총 결제 금액: {totalPrice} ETH</p>
+                <p>체크인 날짜 : {initialCheckIn &&
+                    `${('' + initialCheckIn).substring(0, 4)}년 ${('' + initialCheckIn).substring(4, 6)}월 ${('' + initialCheckIn).substring(6, 8)}일`}
+                </p>
+                <p>체크아웃 날짜 : {initialCheckOut &&
+                    `${('' + initialCheckOut).substring(0, 4)}년 ${('' + initialCheckOut).substring(4, 6)}월 ${('' + initialCheckOut).substring(6, 8)}일`}
+                </p>
+                <p className="date-range">
+                    {`숙박일 : ${nights}박${nights + 1}일`}
+                </p>
+                <p>총 결제 금액: {totalPrice} ETH</p>
             </div>
             <button
                 onClick={handleSubmit}

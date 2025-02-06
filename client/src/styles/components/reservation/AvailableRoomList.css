@@ -1,0 +1,55 @@
+/* client/src/styles/components/reservation/AvailableRoomList.css */
+.available-rooms {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+}
+
+.room-card {
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    transition: transform 0.2s;
+}
+
+.room-card:hover {
+    transform: translateY(-2px);
+}
+
+.room-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.status.available { background-color: #d4edda; color: #155724; }
+.status.booked { background-color: #f8d7da; color: #721c24; }
+.status.maintenance { background-color: #fff3cd; color: #856404; }
+
+.room-details p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.loading, .no-rooms {
+    text-align: center;
+    padding: 20px;
+    color: #999;
+}
+
+.error {
+    color: #dc3545;
+    padding: 10px;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    background-color: #f8d7da;
+}

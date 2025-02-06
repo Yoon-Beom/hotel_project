@@ -1,5 +1,5 @@
-// client/src/components/MonthlyChart.jsx
-import React from 'react';
+// client/src/components/charts/MonthlyChart.jsx
+import React, { useMemo } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
@@ -25,6 +25,18 @@ ChartJS.register(
 const MonthlyChart = ({ monthlyData }) => {
     const years = getRecentYears();
     const { getColorForYear } = useChart();
+
+    // 데이터 최대값 계산 로직
+    const calculateAdjustedMax = useMemo(() => {
+        const allValues = Object.values(monthlyData)
+            .flatMap(month => Object.values(month))
+            .filter(value => typeof value === 'number');
+
+        if (allValues.length === 0) return 1; // 기본값
+
+        const maxValue = Math.max(...allValues);
+        return Math.ceil(maxValue * 1.2);
+    }, [monthlyData]);
 
     const chartData = {
         labels: Object.keys(monthlyData).map(month => `${month}월`),
@@ -52,9 +64,9 @@ const MonthlyChart = ({ monthlyData }) => {
         scales: {
             y: {
                 min: 0,
-                max: 12,
+                max: calculateAdjustedMax,
                 ticks: {
-                    stepSize: 1,
+                    stepSize: Math.ceil(calculateAdjustedMax/10),
                     font: { size: 12 }
                 },
                 title: {

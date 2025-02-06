@@ -1,4 +1,4 @@
-// client/src/components/ReservationList.jsx
+// client/src/components/reservation/ReservationList.jsx
 import React, { useEffect } from 'react';
 import useWeb3 from '../../hooks/useWeb3';
 import useReservation from '../../hooks/useReservation';

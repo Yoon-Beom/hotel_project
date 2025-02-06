@@ -1,4 +1,4 @@
-// client/src/components/AddHotel.jsx
+// client/src/components/hotel/AddHotel.jsx
 import React, { useState } from 'react';
 import useHotel from '../../hooks/useHotel';
 // import useIPFS from '../hooks/useIPFS';
