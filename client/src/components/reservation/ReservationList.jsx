@@ -13,12 +13,12 @@ import '../../styles/components/reservation/ReservationList.css';
  */
 const ReservationList = () => {
     const { web3 } = useWeb3();
-    const { 
-        reservations, 
-        isLoading: isReservationLoading, 
-        error: reservationError, 
-        fetchUserReservations, 
-        cancelUserReservation 
+    const {
+        reservations,
+        isLoading: isReservationLoading,
+        error: reservationError,
+        fetchUserReservations,
+        cancelUserReservation
     } = useReservation();
     const { getHotelInfo, isLoading: isHotelLoading, error: hotelError } = useHotel();
     const [reservationsWithHotelInfo, setReservationsWithHotelInfo] = useState([]);
@@ -83,7 +83,7 @@ const ReservationList = () => {
                             </tbody>
                         </table>
                     </div>
-    
+
                     <div className="info-section">
                         <table className="reservation-info-table">
                             <tbody>
@@ -101,7 +101,7 @@ const ReservationList = () => {
                                 </tr>
                                 <tr>
                                     <td className="label">숙박일</td>
-                                    <td className="value">{reservation.nightcount}박 {reservation.nightcount + 1}일</td>
+                                    <td className="value">{Number(reservation.nightCount)}박 {Number(reservation.nightCount) + 1}일</td>
                                 </tr>
                                 <tr>
                                     <td className="label">예약 상태</td>
@@ -114,9 +114,9 @@ const ReservationList = () => {
                             </tbody>
                         </table>
                     </div>
-    
+
                     {reservation.status === 1 && (
-                        <button 
+                        <button
                             onClick={() => handleCancelReservation(reservation.id)}
                             className="cancel-button"
                         >
