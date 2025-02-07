@@ -101,7 +101,7 @@ const ReservationList = () => {
                                 </tr>
                                 <tr>
                                     <td className="label">숙박일</td>
-                                    <td className="value">2박 3일</td>
+                                    <td className="value">{reservation.nightcount}박 {reservation.nightcount + 1}일</td>
                                 </tr>
                                 <tr>
                                     <td className="label">예약 상태</td>
