@@ -1,4 +1,4 @@
-// File Structure Diagram Last Modify 250205 1100
+// File Structure Diagram Last Modify 250207 0900
 hotel_project/
 |-- client/
 |   |-- src/
@@ -23,10 +23,12 @@ hotel_project/
 |       |   |-- reservation/
 |       |   |   |-- AddReservation.jsx
 |       |   |   |-- AvailableHotels.jsx
+|       |   |   |-- AvailableRoomList.jsx
 |       |   |   `-- ReservationList.jsx
 |       |   `-- room/
 |       |       |-- AddRoom.jsx
-|       |       `-- RoomList.jsx
+|       |       |-- RoomList.jsx
+|       |       `-- AddReservations.jsx
 |       |
 |       |-- contexts/
 |       |   `-- Web3Context.js
@@ -54,14 +56,34 @@ hotel_project/
 |       |
 |       |-- styles/
 |       |   |-- components/
+|       |   |   |-- calendar/
+|       |   |   |   `-- .gitkeep
+|       |   |   |-- charts/
+|       |   |   |   `-- .gitkeep
+|       |   |   |-- hotel/
+|       |   |   |   |-- .gitkeep
+|       |   |   |   |-- AddHotel.css
+|       |   |   |   `-- HotelManagementList.css
 |       |   |   |-- layout/
+|       |   |   |   |-- Footer.css
+|       |   |   |   |-- Layout.css
+|       |   |   |   `-- Navbar.css
+|       |   |   |-- reservation/
+|       |   |   |   |-- .gitkeep
+|       |   |   |   |-- AddReservation.css
 |       |   |   |   |-- AvailableHotels.css
-|       |   |   |   |-- MonthCalendar.css
-|       |   |   |   `-- TotalFor3Years.css
-|       |   |   `-- global.css
+|       |   |   |   |-- AvailableRoomList.css
+|       |   |   |   `-- ReservationList.css
+|       |   |   `-- room/
+|       |   |       |-- MonthCalendar.css
+|       |   |       `-- TotalFor3Years.css
 |       |   |-- pages/
-|       |   |-- App.css
-|       |   `-- index.css
+|       |   |   |-- HomePage.css
+|       |   |   |-- HotelManagementPage.css
+|       |   |   |-- ReservationPage.css
+|       |   |   |-- StatisticsPage.css
+|       |   |   `-- UserReservationsPage.css
+|       |   `-- global.css
 |       |
 |       |-- utils/
 |       |   |-- calendarUtils.js
@@ -100,6 +122,7 @@ hotel_project/
 |-- package-lock.json
 |-- package.json
 |-- README.md
+|-- start_tx.bat
 |-- truffle-config.js
 |-- truffle_deploy_full.bat
 |-- truffle_migrate.bat
